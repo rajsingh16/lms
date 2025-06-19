@@ -1,0 +1,303 @@
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  Home,
+  CreditCard,
+  DollarSign,
+  Users,
+  PiggyBank,
+  Handshake,
+  ChevronDown,
+  ChevronRight,
+  Settings,
+  LogOut,
+  X,
+  Shield
+} from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
+import { PermissionGuard } from '../Common/PermissionGuard';
+
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  path?: string;
+  children?: MenuItem[];
+  roles?: string[];
+  module?: string;
+  permission?: string;
+}
+
+const menuItems: MenuItem[] = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: <Home className="w-5 h-5" />,
+    path: '/dashboard'
+  },
+  {
+    id: 'loan',
+    label: 'Loan Module',
+    icon: <CreditCard className="w-5 h-5" />,
+    module: 'loan',
+    permission: 'read',
+    children: [
+      {
+        id: 'loan-master',
+        label: 'Master',
+        icon: <div className="w-2 h-2 bg-blue-500 rounded-full"></div>,
+        children: [
+          { id: 'centers', label: 'Centers', icon: null, path: '/loan/master/centers', module: 'loan', permission: 'read' },
+          { id: 'areas', label: 'Areas', icon: null, path: '/loan/master/areas', module: 'loan', permission: 'read' },
+          { id: 'villages', label: 'Villages', icon: null, path: '/loan/master/villages', module: 'loan', permission: 'read' },
+          { id: 'clients', label: 'Clients', icon: null, path: '/loan/master/clients', module: 'loan', permission: 'read' },
+          { id: 'products', label: 'Products', icon: null, path: '/loan/master/products', module: 'loan', permission: 'read' },
+          { id: 'districts', label: 'Districts', icon: null, path: '/loan/master/districts', module: 'loan', permission: 'read' },
+          { id: 'insurance', label: 'Insurance', icon: null, path: '/loan/master/insurance', module: 'loan', permission: 'read' },
+          { id: 'purpose', label: 'Purpose', icon: null, path: '/loan/master/purpose', module: 'loan', permission: 'read' },
+        ]
+      },
+      {
+        id: 'loan-transaction',
+        label: 'Transaction',
+        icon: <div className="w-2 h-2 bg-green-500 rounded-full"></div>,
+        children: [
+          { id: 'loan-application', label: 'Loan Application', icon: null, path: '/loan/transaction/application', module: 'loan', permission: 'write' },
+          { id: 'loan-details', label: 'Loan Details', icon: null, path: '/loan/transaction/details', module: 'loan', permission: 'read' },
+          { id: 'credit-bureau', label: 'Credit Bureau', icon: null, path: '/loan/transaction/credit-bureau', module: 'loan', permission: 'read' },
+          { id: 'neft-disbursement', label: 'NEFT Disbursement', icon: null, path: '/loan/transaction/neft', module: 'loan', permission: 'write' },
+          { id: 'product-branch-mapping', label: 'Product Branch Mapping', icon: null, path: '/loan/transaction/product-branch-mapping', roles: ['admin', 'manager'] },
+          { id: 'center-meeting', label: 'Center Meeting', icon: null, path: '/loan/transaction/meeting', module: 'loan', permission: 'write' },
+          { id: 'branch-day-close', label: 'Branch Day Close', icon: null, path: '/loan/transaction/day-close', roles: ['admin', 'manager'] },
+        ]
+      },
+      {
+        id: 'loan-reports',
+        label: 'Reports',
+        icon: <div className="w-2 h-2 bg-purple-500 rounded-full"></div>,
+        children: [
+          { id: 'loan-summary', label: 'Loan Summary', icon: null, path: '/loan/reports/summary', module: 'loan', permission: 'read' },
+          { id: 'repayment-details', label: 'Repayment Details', icon: null, path: '/loan/reports/repayment', module: 'loan', permission: 'read' },
+        ]
+      },
+      {
+        id: 'loan-dashboard',
+        label: 'Dashboard',
+        icon: <div className="w-2 h-2 bg-orange-500 rounded-full"></div>,
+        children: [
+          { id: 'collection-dashboard', label: 'Collection Dashboard', icon: null, path: '/loan/dashboard/collection', module: 'loan', permission: 'read' },
+          { id: 'overdue-dashboard', label: 'Overdue Dashboard', icon: null, path: '/loan/dashboard/overdue', module: 'loan', permission: 'read' },
+          { id: 'application-funnel', label: 'Application Funnel', icon: null, path: '/loan/dashboard/funnel', module: 'loan', permission: 'read' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'finance',
+    label: 'Finance Module',
+    icon: <DollarSign className="w-5 h-5" />,
+    module: 'finance',
+    permission: 'read',
+    children: [
+      { id: 'finance-master', label: 'Master', icon: <div className="w-2 h-2 bg-blue-500 rounded-full"></div>, path: '/finance/master', module: 'finance', permission: 'read' },
+      { id: 'finance-transaction', label: 'Transaction', icon: <div className="w-2 h-2 bg-green-500 rounded-full"></div>, path: '/finance/transaction', module: 'finance', permission: 'write' },
+      { id: 'finance-reports', label: 'Reports', icon: <div className="w-2 h-2 bg-purple-500 rounded-full"></div>, path: '/finance/reports', module: 'finance', permission: 'read' },
+    ]
+  },
+  {
+    id: 'hr',
+    label: 'HR Module',
+    icon: <Users className="w-5 h-5" />,
+    roles: ['admin', 'manager'],
+    children: [
+      { id: 'hr-master', label: 'Master', icon: <div className="w-2 h-2 bg-blue-500 rounded-full"></div>, path: '/hr/master', roles: ['admin', 'manager'] },
+      { id: 'hr-transaction', label: 'Transaction', icon: <div className="w-2 h-2 bg-green-500 rounded-full"></div>, path: '/hr/transaction', roles: ['admin', 'manager'] },
+      { id: 'hr-reports', label: 'Reports', icon: <div className="w-2 h-2 bg-purple-500 rounded-full"></div>, path: '/hr/reports', roles: ['admin', 'manager'] },
+    ]
+  },
+  {
+    id: 'funds',
+    label: 'Funds Allocation',
+    icon: <PiggyBank className="w-5 h-5" />,
+    roles: ['admin', 'manager', 'finance_officer'],
+    children: [
+      { id: 'funds-master', label: 'Master', icon: <div className="w-2 h-2 bg-blue-500 rounded-full"></div>, path: '/funds/master', roles: ['admin', 'manager', 'finance_officer'] },
+      { id: 'funds-transaction', label: 'Transaction', icon: <div className="w-2 h-2 bg-green-500 rounded-full"></div>, path: '/funds/transaction', roles: ['admin', 'manager', 'finance_officer'] },
+    ]
+  },
+  {
+    id: 'business-partner',
+    label: 'Business Partner',
+    icon: <Handshake className="w-5 h-5" />,
+    roles: ['admin', 'manager'],
+    children: [
+      { id: 'external-sanction', label: 'External Sanction', icon: <div className="w-2 h-2 bg-blue-500 rounded-full"></div>, path: '/business-partner/external-sanction', roles: ['admin', 'manager'] },
+    ]
+  }
+];
+
+export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+  const [expandedItems, setExpandedItems] = useState<string[]>(['loan']);
+  const location = useLocation();
+  const { auth, logout, hasRole, hasPermission } = useAuth();
+
+  const toggleExpanded = (itemId: string) => {
+    setExpandedItems(prev =>
+      prev.includes(itemId)
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
+  const isActive = (path?: string) => {
+    return path && location.pathname === path;
+  };
+
+  const canAccessItem = (item: MenuItem): boolean => {
+    // Check role-based access
+    if (item.roles && !hasRole(item.roles)) {
+      return false;
+    }
+    
+    // Check permission-based access
+    if (item.module && item.permission && !hasPermission(item.module, item.permission)) {
+      return false;
+    }
+    
+    return true;
+  };
+
+  const renderMenuItem = (item: MenuItem, level = 0) => {
+    if (!canAccessItem(item)) {
+      return null;
+    }
+
+    const hasChildren = item.children && item.children.length > 0;
+    const isExpanded = expandedItems.includes(item.id);
+    const isItemActive = isActive(item.path);
+
+    return (
+      <div key={item.id} className={`${level > 0 ? 'ml-4' : ''}`}>
+        {hasChildren ? (
+          <button
+            onClick={() => toggleExpanded(item.id)}
+            className={`w-full flex items-center justify-between px-3 py-2 text-left text-sm font-medium rounded-lg transition-colors duration-200 ${
+              level === 0 ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              {item.icon}
+              <span>{item.label}</span>
+            </div>
+            {isExpanded ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </button>
+        ) : (
+          <Link
+            to={item.path || '#'}
+            className={`flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
+              isItemActive
+                ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                : level === 0
+                ? 'text-gray-700 hover:bg-gray-100'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+            onClick={() => window.innerWidth < 768 && onClose()}
+          >
+            {item.icon && <span>{item.icon}</span>}
+            <span>{item.label}</span>
+          </Link>
+        )}
+
+        {hasChildren && isExpanded && (
+          <div className="mt-1 space-y-1">
+            {item.children!.map(child => renderMenuItem(child, level + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      {/* Mobile backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-50 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:translate-x-0 md:static md:z-auto`}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center space-x-2">
+            <CreditCard className="w-8 h-8 text-blue-600" />
+            <span className="text-xl font-bold text-gray-900">LoanMS</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="md:hidden p-1 rounded-lg hover:bg-gray-100"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* User info */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {auth.user?.first_name?.[0]}{auth.user?.last_name?.[0]}
+              </span>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900">
+                {auth.user?.first_name} {auth.user?.last_name}
+              </p>
+              <div className="flex items-center space-x-1">
+                <Shield className="w-3 h-3 text-gray-400" />
+                <p className="text-xs text-gray-500 capitalize">
+                  {auth.user?.role?.replace('_', ' ')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          {menuItems.map(item => renderMenuItem(item))}
+        </nav>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-gray-200 space-y-2">
+          <PermissionGuard roles={['admin']}>
+            <Link
+              to="/settings"
+              className="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            >
+              <Settings className="w-5 h-5" />
+              <span>Settings</span>
+            </Link>
+          </PermissionGuard>
+          <button
+            onClick={logout}
+            className="w-full flex items-center space-x-3 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors duration-200"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
