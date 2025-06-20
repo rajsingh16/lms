@@ -1,113 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataTable } from '../../../components/Common/DataTable';
 import { Modal } from '../../../components/Common/Modal';
 import { FilterDropdown } from '../../../components/Common/FilterDropdown';
 import { CenterForm } from '../../../components/Forms/CenterForm';
+import { CSVUpload } from '../../../components/Common/CSVUpload';
+import { PermissionGuard } from '../../../components/Common/PermissionGuard';
 import { LoanCenter, CenterFormData, FilterOptions } from '../../../types';
-import { Building, MapPin, Users, Calendar, Edit, Trash2, Clock, Phone, CheckCircle, XCircle } from 'lucide-react';
+import { useAuth } from '../../../hooks/useAuth';
+import { centerService } from '../../../services/centerService';
+import { 
+  Building, 
+  MapPin, 
+  Users, 
+  Calendar, 
+  Edit, 
+  Trash2, 
+  Clock, 
+  Phone, 
+  CheckCircle, 
+  XCircle,
+  Upload,
+  Download,
+  AlertCircle,
+  Loader
+} from 'lucide-react';
 
 export const Centers: React.FC = () => {
-  const [centers, setCenters] = useState<LoanCenter[]>([
-    {
-      id: '1',
-      centerCode: 'CTR001',
-      centerName: 'Anand Nagar Center',
-      branch: 'Main Branch',
-      area: 'North Area',
-      village: 'Anand Nagar',
-      assignedTo: 'Amit Kumar',
-      status: 'active',
-      createdOn: '2024-01-10',
-      memberCount: 25,
-      centerDay: 'Monday',
-      centerTime: '10:00',
-      contactPersonName: 'Rajesh Sharma',
-      contactPersonNumber: '+91 9876543210',
-      meetingPlace: 'Community Hall',
-      isActive: true,
-      address1: '123 Main Street',
-      address2: 'Near Bus Stand',
-      landmark: 'Opposite Bank',
-      pincode: '110001',
-      villageId: 'V001',
-      city: 'Delhi',
-      latitude: 28.6139,
-      longitude: 77.2090,
-      createdBy: 'Admin',
-      blacklisted: false,
-      bcCenterId: 'BC001',
-      parentCenterId: null
-    },
-    {
-      id: '2',
-      centerCode: 'CTR002',
-      centerName: 'Gandhi Colony Center',
-      branch: 'Main Branch',
-      area: 'South Area',
-      village: 'Gandhi Colony',
-      assignedTo: 'Priya Sharma',
-      status: 'active',
-      createdOn: '2024-01-08',
-      memberCount: 30,
-      centerDay: 'Wednesday',
-      centerTime: '14:00',
-      contactPersonName: 'Sunita Devi',
-      contactPersonNumber: '+91 9876543211',
-      meetingPlace: 'School Ground',
-      isActive: true,
-      address1: '456 Gandhi Road',
-      address2: 'Sector 2',
-      landmark: 'Near Temple',
-      pincode: '110002',
-      villageId: 'V002',
-      city: 'Delhi',
-      latitude: 28.5355,
-      longitude: 77.3910,
-      createdBy: 'Manager',
-      blacklisted: false,
-      bcCenterId: 'BC002',
-      parentCenterId: null
-    },
-    {
-      id: '3',
-      centerCode: 'CTR003',
-      centerName: 'Nehru Park Center',
-      branch: 'Branch 2',
-      area: 'East Area',
-      village: 'Nehru Park',
-      assignedTo: 'Rajesh Singh',
-      status: 'inactive',
-      createdOn: '2024-01-05',
-      memberCount: 18,
-      centerDay: 'Friday',
-      centerTime: '11:30',
-      contactPersonName: 'Mohit Kumar',
-      contactPersonNumber: '+91 9876543212',
-      meetingPlace: 'Park Pavilion',
-      isActive: false,
-      address1: '789 Park Avenue',
-      address2: 'Block A',
-      landmark: 'Central Park',
-      pincode: '110003',
-      villageId: 'V003',
-      city: 'Delhi',
-      latitude: 28.6304,
-      longitude: 77.2177,
-      createdBy: 'Officer',
-      blacklisted: true,
-      bcCenterId: 'BC003',
-      parentCenterId: 'CTR001'
-    }
-  ]);
-
-  const [filteredCenters, setFilteredCenters] = useState<LoanCenter[]>(centers);
+  const { hasPermission } = useAuth();
+  const [centers, setCenters] = useState<LoanCenter[]>([]);
+  const [filteredCenters, setFilteredCenters] = useState<LoanCenter[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showCSVModal, setShowCSVModal] = useState(false);
   const [selectedCenter, setSelectedCenter] = useState<LoanCenter | null>(null);
   const [editingCenter, setEditingCenter] = useState<LoanCenter | null>(null);
+  const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
 
   const branches = Array.from(new Set(centers.map(c => c.branch)));
   const centerNames = Array.from(new Set(centers.map(c => c.centerName)));
   const assignedToOptions = Array.from(new Set(centers.map(c => c.assignedTo)));
+
+  useEffect(() => {
+    loadCenters();
+  }, []);
+
+  const loadCenters = async () => {
+    try {
+      setLoading(true);
+      const data = await centerService.getAllCenters();
+      setCenters(data);
+      setFilteredCenters(data);
+    } catch (err) {
+      setError('Failed to load centers');
+      console.error('Error loading centers:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleFilter = (filters: FilterOptions) => {
     let filtered = centers;
@@ -131,73 +81,81 @@ export const Centers: React.FC = () => {
     setFilteredCenters(filtered);
   };
 
-  const handleAddCenter = (formData: CenterFormData) => {
-    const newCenter: LoanCenter = {
-      id: Date.now().toString(),
-      centerCode: `CTR${String(centers.length + 1).padStart(3, '0')}`,
-      centerName: formData.centerName,
-      branch: formData.branch,
-      area: 'New Area',
-      village: formData.village,
-      assignedTo: formData.assignedTo,
-      status: formData.isActive ? 'active' : 'inactive',
-      createdOn: new Date().toISOString().split('T')[0],
-      memberCount: 0,
-      centerDay: formData.centerDay,
-      centerTime: formData.centerTime,
-      contactPersonName: formData.contactPersonName,
-      contactPersonNumber: formData.contactPersonNumber,
-      meetingPlace: formData.meetingPlace,
-      isActive: formData.isActive,
-      address1: formData.address1,
-      address2: formData.address2,
-      landmark: formData.landmark,
-      pincode: '000000',
-      villageId: 'V' + String(centers.length + 1).padStart(3, '0'),
-      city: 'City',
-      createdBy: 'Current User',
-      blacklisted: false
-    };
-
-    setCenters(prev => [...prev, newCenter]);
-    setFilteredCenters(prev => [...prev, newCenter]);
-    setShowAddModal(false);
+  const handleAddCenter = async (formData: CenterFormData) => {
+    try {
+      const newCenter = await centerService.createCenter(formData);
+      setCenters(prev => [...prev, newCenter]);
+      setFilteredCenters(prev => [...prev, newCenter]);
+      setShowAddModal(false);
+      setSuccess('Center created successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError('Failed to create center');
+      console.error('Error creating center:', err);
+    }
   };
 
   const handleEditCenter = (center: LoanCenter) => {
     setEditingCenter(center);
   };
 
-  const handleUpdateCenter = (formData: CenterFormData) => {
+  const handleUpdateCenter = async (formData: CenterFormData) => {
     if (!editingCenter) return;
 
-    const updatedCenter: LoanCenter = {
-      ...editingCenter,
-      centerName: formData.centerName,
-      branch: formData.branch,
-      village: formData.village,
-      assignedTo: formData.assignedTo,
-      status: formData.isActive ? 'active' : 'inactive',
-      centerDay: formData.centerDay,
-      centerTime: formData.centerTime,
-      contactPersonName: formData.contactPersonName,
-      contactPersonNumber: formData.contactPersonNumber,
-      meetingPlace: formData.meetingPlace,
-      isActive: formData.isActive,
-      address1: formData.address1,
-      address2: formData.address2,
-      landmark: formData.landmark
-    };
-
-    setCenters(prev => prev.map(c => c.id === editingCenter.id ? updatedCenter : c));
-    setFilteredCenters(prev => prev.map(c => c.id === editingCenter.id ? updatedCenter : c));
-    setEditingCenter(null);
+    try {
+      const updatedCenter = await centerService.updateCenter(editingCenter.id, formData);
+      setCenters(prev => prev.map(c => c.id === editingCenter.id ? updatedCenter : c));
+      setFilteredCenters(prev => prev.map(c => c.id === editingCenter.id ? updatedCenter : c));
+      setEditingCenter(null);
+      setSuccess('Center updated successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError('Failed to update center');
+      console.error('Error updating center:', err);
+    }
   };
 
-  const handleDeleteCenter = (centerId: string) => {
-    if (window.confirm('Are you sure you want to delete this center?')) {
+  const handleDeleteCenter = async (centerId: string) => {
+    if (!window.confirm('Are you sure you want to delete this center?')) return;
+
+    try {
+      await centerService.deleteCenter(centerId);
       setCenters(prev => prev.filter(c => c.id !== centerId));
       setFilteredCenters(prev => prev.filter(c => c.id !== centerId));
+      setSuccess('Center deleted successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError('Failed to delete center');
+      console.error('Error deleting center:', err);
+    }
+  };
+
+  const handleCSVUpload = async (file: File) => {
+    try {
+      const result = await centerService.uploadCentersCSV(file);
+      
+      if (result.success) {
+        await loadCenters(); // Reload data
+        setShowCSVModal(false);
+        setSuccess(`CSV upload completed! ${result.created} created, ${result.updated} updated, ${result.errors} errors.`);
+        setTimeout(() => setSuccess(''), 5000);
+      } else {
+        setError(result.message || 'CSV upload failed');
+      }
+    } catch (err) {
+      setError('Failed to upload CSV');
+      console.error('Error uploading CSV:', err);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      await centerService.exportCentersCSV(filteredCenters);
+      setSuccess('CSV exported successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError('Failed to export CSV');
+      console.error('Error exporting CSV:', err);
     }
   };
 
@@ -207,20 +165,24 @@ export const Centers: React.FC = () => {
       label: 'Action',
       render: (value: any, row: LoanCenter) => (
         <div className="flex items-center space-x-2">
-          <button
-            onClick={() => handleEditCenter(row)}
-            className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors duration-200"
-            title="Edit"
-          >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleDeleteCenter(row.id)}
-            className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors duration-200"
-            title="Delete"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          <PermissionGuard module="loan" permission="write">
+            <button
+              onClick={() => handleEditCenter(row)}
+              className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors duration-200"
+              title="Edit"
+            >
+              <Edit className="w-4 h-4" />
+            </button>
+          </PermissionGuard>
+          <PermissionGuard module="loan" permission="delete">
+            <button
+              onClick={() => handleDeleteCenter(row.id)}
+              className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors duration-200"
+              title="Delete"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </PermissionGuard>
         </div>
       )
     },
@@ -279,45 +241,18 @@ export const Centers: React.FC = () => {
       )
     },
     {
-      key: 'blacklisted',
-      label: 'Blacklisted',
-      render: (value: boolean) => (
-        <div className="flex items-center">
-          {value ? (
-            <XCircle className="w-4 h-4 text-red-500" />
-          ) : (
-            <CheckCircle className="w-4 h-4 text-green-500" />
-          )}
-        </div>
-      )
-    },
-    {
       key: 'assignedTo',
       label: 'Assigned To',
       sortable: true,
     },
     {
-      key: 'bcCenterId',
-      label: 'BC Center ID',
-      render: (value: string) => (
-        <span className="font-mono text-sm">{value}</span>
-      )
-    },
-    {
-      key: 'parentCenterId',
-      label: 'Parent Center ID',
-      render: (value: string) => (
-        <span className="font-mono text-sm">{value || '-'}</span>
-      )
-    },
-    {
       key: 'contactPersonName',
-      label: 'Contact Person Name',
+      label: 'Contact Person',
       sortable: true,
     },
     {
       key: 'contactPersonNumber',
-      label: 'Contact Person Number',
+      label: 'Contact Number',
       render: (value: string) => (
         <div className="flex items-center space-x-1">
           <Phone className="w-4 h-4 text-gray-400" />
@@ -326,58 +261,15 @@ export const Centers: React.FC = () => {
       )
     },
     {
-      key: 'address1',
-      label: 'Address 1',
+      key: 'village',
+      label: 'Village',
       sortable: true,
-    },
-    {
-      key: 'address2',
-      label: 'Address 2',
-      render: (value: string) => value || '-'
-    },
-    {
-      key: 'landmark',
-      label: 'Landmark',
-      render: (value: string) => value || '-'
-    },
-    {
-      key: 'pincode',
-      label: 'Pincode',
       render: (value: string) => (
-        <span className="font-mono">{value}</span>
+        <div className="flex items-center space-x-1">
+          <MapPin className="w-4 h-4 text-gray-400" />
+          <span>{value}</span>
+        </div>
       )
-    },
-    {
-      key: 'villageId',
-      label: 'Village ID',
-      render: (value: string) => (
-        <span className="font-mono text-sm">{value}</span>
-      )
-    },
-    {
-      key: 'city',
-      label: 'City',
-      sortable: true,
-    },
-    {
-      key: 'meetingPlace',
-      label: 'Meeting Place',
-      sortable: true,
-    },
-    {
-      key: 'latitude',
-      label: 'Latitude',
-      render: (value: number) => value?.toFixed(4) || '-'
-    },
-    {
-      key: 'longitude',
-      label: 'Longitude',
-      render: (value: number) => value?.toFixed(4) || '-'
-    },
-    {
-      key: 'createdBy',
-      label: 'Created By',
-      sortable: true,
     },
     {
       key: 'createdOn',
@@ -392,12 +284,38 @@ export const Centers: React.FC = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="flex items-center space-x-3">
+          <Loader className="w-6 h-6 animate-spin text-blue-600" />
+          <span className="text-gray-600">Loading centers...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Centers</h1>
         <p className="text-gray-600 mt-1">Manage loan centers and their details</p>
       </div>
+
+      {/* Success/Error Messages */}
+      {success && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center space-x-2">
+          <CheckCircle className="w-5 h-5 flex-shrink-0" />
+          <span>{success}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center space-x-2">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-6 border-b border-gray-200">
@@ -417,12 +335,34 @@ export const Centers: React.FC = () => {
                 assignedToOptions={assignedToOptions}
               />
               
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-              >
-                <span>Add New</span>
-              </button>
+              <PermissionGuard module="loan" permission="read">
+                <button
+                  onClick={handleExportCSV}
+                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Export CSV</span>
+                </button>
+              </PermissionGuard>
+
+              <PermissionGuard module="loan" permission="write">
+                <button
+                  onClick={() => setShowCSVModal(true)}
+                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>Upload CSV</span>
+                </button>
+              </PermissionGuard>
+              
+              <PermissionGuard module="loan" permission="write">
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                >
+                  <span>Add New</span>
+                </button>
+              </PermissionGuard>
             </div>
           </div>
         </div>
@@ -486,20 +426,50 @@ export const Centers: React.FC = () => {
             initialData={{
               branch: editingCenter.branch,
               centerName: editingCenter.centerName,
-              centerDay: editingCenter.centerDay,
-              centerTime: editingCenter.centerTime,
+              centerDay: editingCenter.centerDay || '',
+              centerTime: editingCenter.centerTime || '',
               assignedTo: editingCenter.assignedTo,
-              contactPersonName: editingCenter.contactPersonName,
-              contactPersonNumber: editingCenter.contactPersonNumber,
-              meetingPlace: editingCenter.meetingPlace,
-              isActive: editingCenter.isActive,
-              address1: editingCenter.address1,
-              address2: editingCenter.address2,
-              landmark: editingCenter.landmark,
+              contactPersonName: editingCenter.contactPersonName || '',
+              contactPersonNumber: editingCenter.contactPersonNumber || '',
+              meetingPlace: editingCenter.meetingPlace || '',
+              isActive: editingCenter.isActive ?? true,
+              address1: editingCenter.address1 || '',
+              address2: editingCenter.address2 || '',
+              landmark: editingCenter.landmark || '',
               village: editingCenter.village
             }}
           />
         )}
+      </Modal>
+
+      {/* CSV Upload Modal */}
+      <Modal
+        isOpen={showCSVModal}
+        onClose={() => setShowCSVModal(false)}
+        title="Upload Centers CSV"
+        size="lg"
+      >
+        <CSVUpload
+          onUpload={handleCSVUpload}
+          onCancel={() => setShowCSVModal(false)}
+          templateColumns={[
+            'centerCode',
+            'centerName',
+            'branch',
+            'village',
+            'assignedTo',
+            'centerDay',
+            'centerTime',
+            'contactPersonName',
+            'contactPersonNumber',
+            'meetingPlace',
+            'address1',
+            'address2',
+            'landmark',
+            'status'
+          ]}
+          entityName="centers"
+        />
       </Modal>
     </div>
   );
