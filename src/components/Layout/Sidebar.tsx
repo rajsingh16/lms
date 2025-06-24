@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
   CreditCard,
@@ -259,12 +259,13 @@ const menuItems: MenuItem[] = [
 export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const [expandedItems, setExpandedItems] = useState<string[]>(['loan']);
   const location = useLocation();
+  const navigate = useNavigate();
   const { auth, logout, hasRole, hasPermission } = useAuth();
 
   const toggleExpanded = (itemId: string) => {
     setExpandedItems(prev =>
       prev.includes(itemId)
-        ? prev.filter(id => id !== itemId)
+        ? prev.filter(id => id !== itemId && !id.startsWith(`${itemId}-`))
         : [...prev, itemId]
     );
   };
@@ -287,6 +288,11 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
     return true;
   };
 
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   const renderMenuItem = (item: MenuItem, level = 0) => {
     if (!canAccessItem(item)) {
       return null;
@@ -295,6 +301,10 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.id);
     const isItemActive = isActive(item.path);
+    const hasActiveChild = hasChildren && item.children!.some(child => 
+      isActive(child.path) || 
+      (child.children && child.children.some(grandchild => isActive(grandchild.path)))
+    );
 
     return (
       <div key={item.id} className={`${level > 0 ? 'ml-4' : ''}`}>
@@ -302,7 +312,11 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
           <button
             onClick={() => toggleExpanded(item.id)}
             className={`w-full flex items-center justify-between px-3 py-2 text-left text-sm font-medium rounded-lg transition-colors duration-200 ${
-              level === 0 ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+              hasActiveChild 
+                ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
+                : level === 0 
+                  ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' 
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
           >
             <div className="flex items-center space-x-3">
@@ -410,7 +424,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
             </Link>
           </PermissionGuard>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="w-full flex items-center space-x-3 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 transition-colors duration-200"
           >
             <LogOut className="w-5 h-5" />

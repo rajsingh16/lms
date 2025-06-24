@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Bell, User, LogOut, Settings, Moon, Sun } from 'lucide-react';
+import { Menu, Bell, Settings, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -8,12 +8,8 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
-  const { auth, logout } = useAuth();
+  const { auth } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
-
-  const handleLogout = async () => {
-    await logout();
-  };
 
   const getRoleColor = (role: string) => {
     const colors = {
@@ -82,15 +78,9 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               </div>
             </div>
             
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center">
               <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                 <Settings className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              </button>
-              <button 
-                onClick={handleLogout}
-                className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 transition-colors duration-200"
-              >
-                <LogOut className="w-4 h-4 text-red-600" />
               </button>
             </div>
           </div>
