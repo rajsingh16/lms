@@ -49,6 +49,82 @@ export interface LoanCenter {
   parentCenterId?: string;
 }
 
+export interface LoanArea {
+  id: string;
+  areaType: string;
+  areaCode: string;
+  areaName: string;
+  parentArea: string;
+  openingDate: string;
+  closingDate?: string;
+  status: 'active' | 'inactive';
+  address1: string;
+  address2?: string;
+  district: string;
+  pincode: string;
+  latitude?: number;
+  longitude?: number;
+  phoneNumber?: string;
+  emailId?: string;
+  managerId?: string;
+  mandatoryDocument?: string;
+  crossSellAllowed: boolean;
+  rating?: string;
+  minCenterClients: number;
+  maxCenterClients: number;
+  lastDayCloseDate?: string;
+  disbOnMeetingDate: boolean;
+  businessPartner: string;
+  bcBranchId?: string;
+  isDisbActive: boolean;
+  isCashDisbActive: boolean;
+  isSubProductEnabled: boolean;
+  isClientSourcingEnabled: boolean;
+  isCenterFormationEnabled: boolean;
+  cashlessDisbPartner?: string;
+  nachPartner?: string;
+  insertedOn: string;
+  insertedBy: string;
+  updatedOn?: string;
+  updatedBy?: string;
+}
+
+export interface AreaFormData {
+  areaType: string;
+  parentAreaCode: string;
+  areaName: string;
+  branchManagerId?: string;
+  address1: string;
+  address2?: string;
+  phoneNumber?: string;
+  emailId?: string;
+  pincode: string;
+  district: string;
+  state: string;
+  mandatoryDocument?: string;
+  branchRating?: string;
+  minCenterClients: number;
+  maxCenterClients: number;
+  bcBranchId?: string;
+  businessPartner: string;
+  cashlessDisbPartner?: string;
+  nachPartner?: string;
+  branchOpeningDate: string;
+  disbOnMeetingDate: boolean;
+  crossSellAllowed: boolean;
+  isDisbActive: boolean;
+  isCashDisbActive: boolean;
+  isSubProductEnabled: boolean;
+  isClientSourcingEnabled: boolean;
+  isCenterFormationEnabled: boolean;
+}
+
+export interface AreaFilterOptions {
+  areaType?: string;
+  areaCode?: string;
+  parentAreaCode?: string;
+}
+
 export interface LoanClient {
   id: string;
   clientId: string;
