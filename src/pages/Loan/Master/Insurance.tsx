@@ -20,7 +20,7 @@ import {
   User
 } from 'lucide-react';
 
-export const Insurance: React.FC = () => {
+export const InsuranceMasterPage: React.FC = () => {
   const { hasPermission } = useAuth();
   const [insurances, setInsurances] = useState<InsuranceType[]>([]);
   const [filteredInsurances, setFilteredInsurances] = useState<InsuranceType[]>([]);
