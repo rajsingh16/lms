@@ -25,7 +25,8 @@ import {
   Star,
   DollarSign,
   Shield,
-  Clock
+  Clock,
+  FileDown
 } from 'lucide-react';
 
 export const Areas: React.FC = () => {
@@ -153,6 +154,17 @@ export const Areas: React.FC = () => {
     } catch (err) {
       setError('Failed to export CSV');
       console.error('Error exporting CSV:', err);
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      await areaService.downloadTemplate();
+      setSuccess('Template downloaded successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError('Failed to download template');
+      console.error('Error downloading template:', err);
     }
   };
 
@@ -502,6 +514,16 @@ export const Areas: React.FC = () => {
                 areaCodes={areaCodes}
                 parentAreaCodes={parentAreaCodes}
               />
+              
+              <PermissionGuard module="loan" permission="read">
+                <button
+                  onClick={handleDownloadTemplate}
+                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                >
+                  <FileDown className="w-4 h-4" />
+                  <span>Template</span>
+                </button>
+              </PermissionGuard>
               
               <PermissionGuard module="loan" permission="read">
                 <button
