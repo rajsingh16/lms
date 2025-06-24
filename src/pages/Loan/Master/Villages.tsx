@@ -5,27 +5,7 @@ import { VillageForm } from '../../../components/Forms/VillageForm';
 import { PermissionGuard } from '../../../components/Common/PermissionGuard';
 import { Village, VillageFormData, VillageFilterOptions } from '../../../types/village';
 import { useAuth } from '../../../hooks/useAuth';
-import { 
-  Building, 
-  MapPin, 
-  Users, 
-  Calendar, 
-  Edit, 
-  Trash2, 
-  Phone, 
-  Mail, 
-  CheckCircle, 
-  XCircle,
-  Download,
-  AlertCircle,
-  Loader,
-  Plus,
-  Home,
-  School,
-  Hospital,
-  ShoppingCart,
-  Shield
-} from 'lucide-react';
+import { Building, MapPin, Users, Calendar, Edit, Trash2, Phone, Mail, CheckCircle, XCircle, Download, AlertCircle, Loader, Plus, Home, School, Guitar as Hospital, ShoppingCart, Shield } from 'lucide-react';
 
 export const Villages: React.FC = () => {
   const { hasPermission } = useAuth();
