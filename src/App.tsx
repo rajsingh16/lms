@@ -14,6 +14,9 @@ import { Products } from './pages/Loan/Master/Products';
 import { ProductGroups } from './pages/Loan/Master/ProductGroups';
 import { Districts } from './pages/Loan/Master/Districts';
 import { InsuranceMasterPage } from './pages/Loan/Master/Insurance';
+import { Pincode } from './pages/Loan/Master/Pincode';
+import { IFSC } from './pages/Loan/Master/IFSC';
+import { Purpose } from './pages/Loan/Master/Purpose';
 import { LoanApplicationPage } from './pages/Loan/Transaction/LoanApplication';
 import { ProductBranchMappingPage } from './pages/Loan/Transaction/ProductBranchMapping';
 import { OverdueDashboardPage } from './pages/Loan/Dashboard/OverdueDashboard';
@@ -67,7 +70,9 @@ function AppRoutes() {
         <Route path="loan/master/product-groups" element={<ProductGroups />} />
         <Route path="loan/master/districts" element={<Districts />} />
         <Route path="loan/master/insurance" element={<InsuranceMasterPage />} />
-        <Route path="loan/master/purpose" element={<PlaceholderPage title="Purpose" />} />
+        <Route path="loan/master/pincode" element={<Pincode />} />
+        <Route path="loan/master/ifsc" element={<IFSC />} />
+        <Route path="loan/master/purpose" element={<Purpose />} />
         
         <Route path="loan/transaction/application" element={<LoanApplicationPage />} />
         <Route path="loan/transaction/details" element={<PlaceholderPage title="Loan Details" />} />

@@ -59,6 +59,8 @@ const menuItems: MenuItem[] = [
           { id: 'product-groups', label: 'Product Groups', icon: null, path: '/loan/master/product-groups', module: 'loan', permission: 'read' },
           { id: 'districts', label: 'Districts', icon: null, path: '/loan/master/districts', module: 'loan', permission: 'read' },
           { id: 'insurance', label: 'Insurance', icon: null, path: '/loan/master/insurance', module: 'loan', permission: 'read' },
+          { id: 'pincode', label: 'Pincode', icon: null, path: '/loan/master/pincode', module: 'loan', permission: 'read' },
+          { id: 'ifsc', label: 'IFSC', icon: null, path: '/loan/master/ifsc', module: 'loan', permission: 'read' },
           { id: 'purpose', label: 'Purpose', icon: null, path: '/loan/master/purpose', module: 'loan', permission: 'read' },
         ]
       },
