@@ -6,7 +6,6 @@ import { MainLayout } from './components/Layout/MainLayout';
 import { LoginPage } from './components/Auth/LoginPage';
 import { RegisterPage } from './components/Auth/RegisterPage';
 import { Dashboard } from './pages/Dashboard';
-import { Centers } from './pages/Loan/Master/Centers';
 import { Areas } from './pages/Loan/Master/Areas';
 import { Clients } from './pages/Loan/Master/Clients';
 import { LoanApplicationPage } from './pages/Loan/Transaction/LoanApplication';
@@ -51,7 +50,6 @@ function AppRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
         
         {/* Loan Module Routes */}
-        <Route path="loan/master/centers" element={<Centers />} />
         <Route path="loan/master/areas" element={<Areas />} />
         <Route path="loan/master/villages" element={<PlaceholderPage title="Villages" />} />
         <Route path="loan/master/clients" element={<Clients />} />

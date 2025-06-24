@@ -52,7 +52,6 @@ const menuItems: MenuItem[] = [
         label: 'Master',
         icon: <div className="w-2 h-2 bg-blue-500 rounded-full"></div>,
         children: [
-          { id: 'centers', label: 'Centers', icon: null, path: '/loan/master/centers', module: 'loan', permission: 'read' },
           { id: 'areas', label: 'Areas', icon: null, path: '/loan/master/areas', module: 'loan', permission: 'read' },
           { id: 'villages', label: 'Villages', icon: null, path: '/loan/master/villages', module: 'loan', permission: 'read' },
           { id: 'clients', label: 'Clients', icon: null, path: '/loan/master/clients', module: 'loan', permission: 'read' },

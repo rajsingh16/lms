@@ -18,37 +18,6 @@ export interface AuthState {
   loading: boolean;
 }
 
-export interface LoanCenter {
-  id: string;
-  centerCode: string;
-  centerName: string;
-  branch: string;
-  area: string;
-  village: string;
-  assignedTo: string;
-  status: 'active' | 'inactive';
-  createdOn: string;
-  memberCount: number;
-  centerDay?: string;
-  centerTime?: string;
-  contactPersonName?: string;
-  contactPersonNumber?: string;
-  meetingPlace?: string;
-  isActive?: boolean;
-  address1?: string;
-  address2?: string;
-  landmark?: string;
-  pincode?: string;
-  villageId?: string;
-  city?: string;
-  latitude?: number;
-  longitude?: number;
-  createdBy?: string;
-  blacklisted?: boolean;
-  bcCenterId?: string;
-  parentCenterId?: string;
-}
-
 export interface LoanArea {
   id: string;
   areaType: string;
@@ -188,22 +157,6 @@ export interface OverdueData {
   count: number;
   category: string;
   days: number;
-}
-
-export interface CenterFormData {
-  branch: string;
-  centerName: string;
-  centerDay: string;
-  centerTime: string;
-  assignedTo: string;
-  contactPersonName: string;
-  contactPersonNumber: string;
-  meetingPlace: string;
-  isActive: boolean;
-  address1: string;
-  address2: string;
-  landmark: string;
-  village: string;
 }
 
 export interface FilterOptions {
