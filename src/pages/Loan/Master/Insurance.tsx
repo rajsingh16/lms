@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../../../components/Common/Modal';
 import { InsuranceForm } from '../../../components/Forms/InsuranceForm';
 import { PermissionGuard } from '../../../components/Common/PermissionGuard';
-import { Insurance } from '../../../types/product';
+import { Insurance as InsuranceType } from '../../../types/product';
 import { useAuth } from '../../../hooks/useAuth';
 import { 
   Shield, 
@@ -22,16 +22,16 @@ import {
 
 export const Insurance: React.FC = () => {
   const { hasPermission } = useAuth();
-  const [insurances, setInsurances] = useState<Insurance[]>([]);
-  const [filteredInsurances, setFilteredInsurances] = useState<Insurance[]>([]);
+  const [insurances, setInsurances] = useState<InsuranceType[]>([]);
+  const [filteredInsurances, setFilteredInsurances] = useState<InsuranceType[]>([]);
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingInsurance, setEditingInsurance] = useState<Insurance | null>(null);
+  const [editingInsurance, setEditingInsurance] = useState<InsuranceType | null>(null);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
 
   // Sample data for demonstration
-  const sampleInsurances: Insurance[] = [
+  const sampleInsurances: InsuranceType[] = [
     {
       id: '1',
       insuranceId: 'INS001',
@@ -168,7 +168,7 @@ export const Insurance: React.FC = () => {
 
   const handleAddInsurance = async (formData: any) => {
     try {
-      const newInsurance: Insurance = {
+      const newInsurance: InsuranceType = {
         id: String(insurances.length + 1),
         insuranceId: `INS${String(insurances.length + 1).padStart(3, '0')}`,
         insuranceCode: formData.insuranceCode,
@@ -201,7 +201,7 @@ export const Insurance: React.FC = () => {
     }
   };
 
-  const handleEditInsurance = (insurance: Insurance) => {
+  const handleEditInsurance = (insurance: InsuranceType) => {
     setEditingInsurance(insurance);
   };
 
@@ -209,7 +209,7 @@ export const Insurance: React.FC = () => {
     if (!editingInsurance) return;
 
     try {
-      const updatedInsurance: Insurance = {
+      const updatedInsurance: InsuranceType = {
         ...editingInsurance,
         insuranceCode: formData.insuranceCode,
         insuranceType: formData.insuranceType,
@@ -274,7 +274,7 @@ export const Insurance: React.FC = () => {
     {
       key: 'actions',
       label: 'Action',
-      render: (value: any, row: Insurance) => (
+      render: (value: any, row: InsuranceType) => (
         <div className="flex items-center space-x-2">
           <PermissionGuard module="loan" permission="write">
             <button
@@ -348,7 +348,7 @@ export const Insurance: React.FC = () => {
       key: 'premiumValue',
       label: 'Premium Value',
       sortable: true,
-      render: (value: number, row: Insurance) => (
+      render: (value: number, row: InsuranceType) => (
         <div className="flex items-center space-x-1">
           <DollarSign className="w-4 h-4 text-green-500" />
           <span className="font-medium">
@@ -577,7 +577,7 @@ export const Insurance: React.FC = () => {
                 >
                   {columns.map((column) => (
                     <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                      {column.render ? column.render(insurance[column.key as keyof Insurance], insurance) : insurance[column.key as keyof Insurance]}
+                      {column.render ? column.render(insurance[column.key as keyof InsuranceType], insurance) : insurance[column.key as keyof InsuranceType]}
                     </td>
                   ))}
                 </tr>
