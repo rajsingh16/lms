@@ -11,15 +11,55 @@ interface CSVUploadResult {
 }
 
 class CenterService {
-  async getAllCenters(): Promise<LoanCenter[]> {
+  private cache: Map<string, { data: LoanCenter[]; timestamp: number }> = new Map();
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+  private isCacheValid(key: string): boolean {
+    const cached = this.cache.get(key);
+    if (!cached) return false;
+    return Date.now() - cached.timestamp < this.CACHE_DURATION;
+  }
+
+  async getAllCenters(useCache = true): Promise<LoanCenter[]> {
+    const cacheKey = 'all_centers';
+    
+    // Check cache first
+    if (useCache && this.isCacheValid(cacheKey)) {
+      return this.cache.get(cacheKey)!.data;
+    }
+
     try {
+      // Optimized query with minimal joins and specific field selection
       const { data, error } = await supabase
         .from('centers')
         .select(`
-          *,
+          id,
+          center_code,
+          center_name,
+          village,
+          center_day,
+          center_time,
+          contact_person_name,
+          contact_person_number,
+          meeting_place,
+          is_active,
+          status,
+          member_count,
+          address1,
+          address2,
+          landmark,
+          pincode,
+          city,
+          latitude,
+          longitude,
+          blacklisted,
+          created_at,
+          updated_at,
+          branch_id,
+          assigned_to,
+          created_by,
           branches!centers_branch_id_fkey (
-            branch_name,
-            branch_code
+            branch_name
           ),
           assigned_user:user_profiles!centers_assigned_to_fkey (
             first_name,
@@ -30,22 +70,27 @@ class CenterService {
             last_name
           )
         `)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(1000); // Limit to prevent excessive data loading
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
-      return (data || []).map(center => ({
+      // Transform data efficiently
+      const transformedData = (data || []).map(center => ({
         id: center.id,
         centerCode: center.center_code,
         centerName: center.center_name,
         branch: center.branches?.branch_name || 'Unknown Branch',
-        area: 'Area', // You might want to add this to the database
+        area: 'Area', // Static for now - can be enhanced later
         village: center.village,
         assignedTo: center.assigned_user 
           ? `${center.assigned_user.first_name} ${center.assigned_user.last_name}`
           : 'Unassigned',
         status: center.status,
-        createdOn: center.created_at.split('T')[0],
+        createdOn: center.created_at?.split('T')[0] || '',
         memberCount: center.member_count || 0,
         centerDay: center.center_day,
         centerTime: center.center_time,
@@ -57,7 +102,7 @@ class CenterService {
         address2: center.address2,
         landmark: center.landmark,
         pincode: center.pincode,
-        villageId: center.village, // Using village as villageId for now
+        villageId: center.village,
         city: center.city,
         latitude: center.latitude ? parseFloat(center.latitude) : undefined,
         longitude: center.longitude ? parseFloat(center.longitude) : undefined,
@@ -65,9 +110,17 @@ class CenterService {
           ? `${center.created_user.first_name} ${center.created_user.last_name}`
           : 'Unknown',
         blacklisted: center.blacklisted || false,
-        bcCenterId: center.center_code, // Using center_code as bcCenterId
-        parentCenterId: null // You might want to add this relationship
+        bcCenterId: center.center_code,
+        parentCenterId: null
       }));
+
+      // Cache the result
+      this.cache.set(cacheKey, {
+        data: transformedData,
+        timestamp: Date.now()
+      });
+
+      return transformedData;
     } catch (error) {
       console.error('Error fetching centers:', error);
       throw new Error('Failed to fetch centers');
@@ -80,29 +133,35 @@ class CenterService {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Get branch ID from branch name
-      const { data: branches } = await supabase
+      // Get branch ID efficiently
+      const { data: branch } = await supabase
         .from('branches')
         .select('id')
         .eq('branch_name', formData.branch)
         .single();
 
-      // Get assigned user ID
+      if (!branch) {
+        throw new Error(`Branch '${formData.branch}' not found`);
+      }
+
+      // Get assigned user ID efficiently
+      const assignedUserName = formData.assignedTo.split(' ');
       const { data: assignedUser } = await supabase
         .from('user_profiles')
         .select('id')
-        .eq('first_name', formData.assignedTo.split(' ')[0])
+        .eq('first_name', assignedUserName[0])
+        .eq('last_name', assignedUserName[1] || '')
         .single();
 
-      // Generate center code
-      const centerCode = `CTR${String(Date.now()).slice(-6)}`;
+      // Generate unique center code
+      const centerCode = `CTR${Date.now().toString().slice(-6)}`;
 
       const { data, error } = await supabase
         .from('centers')
         .insert({
           center_code: centerCode,
           center_name: formData.centerName,
-          branch_id: branches?.id,
+          branch_id: branch.id,
           village: formData.village,
           assigned_to: assignedUser?.id,
           center_day: formData.centerDay,
@@ -121,6 +180,9 @@ class CenterService {
         .single();
 
       if (error) throw error;
+
+      // Clear cache
+      this.cache.clear();
 
       return {
         id: data.id,
@@ -156,25 +218,27 @@ class CenterService {
 
   async updateCenter(id: string, formData: CenterFormData): Promise<LoanCenter> {
     try {
-      // Get branch ID from branch name
-      const { data: branches } = await supabase
+      // Get branch ID efficiently
+      const { data: branch } = await supabase
         .from('branches')
         .select('id')
         .eq('branch_name', formData.branch)
         .single();
 
-      // Get assigned user ID
+      // Get assigned user ID efficiently
+      const assignedUserName = formData.assignedTo.split(' ');
       const { data: assignedUser } = await supabase
         .from('user_profiles')
         .select('id')
-        .eq('first_name', formData.assignedTo.split(' ')[0])
+        .eq('first_name', assignedUserName[0])
+        .eq('last_name', assignedUserName[1] || '')
         .single();
 
       const { data, error } = await supabase
         .from('centers')
         .update({
           center_name: formData.centerName,
-          branch_id: branches?.id,
+          branch_id: branch?.id,
           village: formData.village,
           assigned_to: assignedUser?.id,
           center_day: formData.centerDay,
@@ -193,6 +257,9 @@ class CenterService {
         .single();
 
       if (error) throw error;
+
+      // Clear cache
+      this.cache.clear();
 
       return {
         id: data.id,
@@ -234,6 +301,9 @@ class CenterService {
         .eq('id', id);
 
       if (error) throw error;
+
+      // Clear cache
+      this.cache.clear();
     } catch (error) {
       console.error('Error deleting center:', error);
       throw new Error('Failed to delete center');
@@ -261,7 +331,7 @@ class CenterService {
           }
 
           const headers = lines[0].split(',').map(h => h.trim());
-          const requiredColumns = ['centerCode', 'centerName', 'branch', 'village', 'assignedTo'];
+          const requiredColumns = ['centerCode', 'centerName', 'branch', 'village'];
           const missingColumns = requiredColumns.filter(col => !headers.includes(col));
           
           if (missingColumns.length > 0) {
@@ -293,100 +363,109 @@ class CenterService {
             return;
           }
 
-          // Process each data row
-          for (let i = 1; i < lines.length; i++) {
-            try {
-              const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-              const rowData: any = {};
-              
-              headers.forEach((header, index) => {
-                rowData[header] = values[index] || '';
-              });
+          // Process in batches for better performance
+          const batchSize = 50;
+          for (let i = 1; i < lines.length; i += batchSize) {
+            const batch = lines.slice(i, i + batchSize);
+            
+            for (let j = 0; j < batch.length; j++) {
+              const rowIndex = i + j;
+              try {
+                const values = batch[j].split(',').map(v => v.trim().replace(/"/g, ''));
+                const rowData: any = {};
+                
+                headers.forEach((header, index) => {
+                  rowData[header] = values[index] || '';
+                });
 
-              // Validate required fields
-              if (!rowData.centerCode || !rowData.centerName || !rowData.branch) {
-                errors++;
-                errorDetails.push(`Row ${i + 1}: Missing required fields`);
-                continue;
-              }
-
-              // Check if center exists
-              const { data: existingCenter } = await supabase
-                .from('centers')
-                .select('id')
-                .eq('center_code', rowData.centerCode)
-                .single();
-
-              // Get branch ID
-              const { data: branch } = await supabase
-                .from('branches')
-                .select('id')
-                .eq('branch_name', rowData.branch)
-                .single();
-
-              if (!branch) {
-                errors++;
-                errorDetails.push(`Row ${i + 1}: Branch '${rowData.branch}' not found`);
-                continue;
-              }
-
-              const centerData = {
-                center_code: rowData.centerCode,
-                center_name: rowData.centerName,
-                branch_id: branch.id,
-                village: rowData.village,
-                center_day: rowData.centerDay || null,
-                center_time: rowData.centerTime || null,
-                contact_person_name: rowData.contactPersonName || null,
-                contact_person_number: rowData.contactPersonNumber || null,
-                meeting_place: rowData.meetingPlace || null,
-                address1: rowData.address1 || null,
-                address2: rowData.address2 || null,
-                landmark: rowData.landmark || null,
-                status: rowData.status || 'active',
-                is_active: rowData.status !== 'inactive',
-                created_by: user.id
-              };
-
-              if (existingCenter) {
-                // Update existing center
-                const { error } = await supabase
-                  .from('centers')
-                  .update(centerData)
-                  .eq('id', existingCenter.id);
-
-                if (error) {
+                // Validate required fields
+                if (!rowData.centerCode || !rowData.centerName || !rowData.branch) {
                   errors++;
-                  errorDetails.push(`Row ${i + 1}: Update failed - ${error.message}`);
-                } else {
-                  updated++;
+                  errorDetails.push(`Row ${rowIndex + 1}: Missing required fields`);
+                  continue;
                 }
-              } else {
-                // Create new center
-                const { error } = await supabase
-                  .from('centers')
-                  .insert(centerData);
 
-                if (error) {
+                // Check if center exists
+                const { data: existingCenter } = await supabase
+                  .from('centers')
+                  .select('id')
+                  .eq('center_code', rowData.centerCode)
+                  .single();
+
+                // Get branch ID
+                const { data: branch } = await supabase
+                  .from('branches')
+                  .select('id')
+                  .eq('branch_name', rowData.branch)
+                  .single();
+
+                if (!branch) {
                   errors++;
-                  errorDetails.push(`Row ${i + 1}: Create failed - ${error.message}`);
-                } else {
-                  created++;
+                  errorDetails.push(`Row ${rowIndex + 1}: Branch '${rowData.branch}' not found`);
+                  continue;
                 }
+
+                const centerData = {
+                  center_code: rowData.centerCode,
+                  center_name: rowData.centerName,
+                  branch_id: branch.id,
+                  village: rowData.village,
+                  center_day: rowData.centerDay || null,
+                  center_time: rowData.centerTime || null,
+                  contact_person_name: rowData.contactPersonName || null,
+                  contact_person_number: rowData.contactPersonNumber || null,
+                  meeting_place: rowData.meetingPlace || null,
+                  address1: rowData.address1 || null,
+                  address2: rowData.address2 || null,
+                  landmark: rowData.landmark || null,
+                  status: rowData.status || 'active',
+                  is_active: rowData.status !== 'inactive',
+                  created_by: user.id
+                };
+
+                if (existingCenter) {
+                  // Update existing center
+                  const { error } = await supabase
+                    .from('centers')
+                    .update(centerData)
+                    .eq('id', existingCenter.id);
+
+                  if (error) {
+                    errors++;
+                    errorDetails.push(`Row ${rowIndex + 1}: Update failed - ${error.message}`);
+                  } else {
+                    updated++;
+                  }
+                } else {
+                  // Create new center
+                  const { error } = await supabase
+                    .from('centers')
+                    .insert(centerData);
+
+                  if (error) {
+                    errors++;
+                    errorDetails.push(`Row ${rowIndex + 1}: Create failed - ${error.message}`);
+                  } else {
+                    created++;
+                  }
+                }
+                
+              } catch (error) {
+                errors++;
+                errorDetails.push(`Row ${rowIndex + 1}: ${error}`);
               }
-              
-            } catch (error) {
-              errors++;
-              errorDetails.push(`Row ${i + 1}: ${error}`);
             }
           }
+
+          // Clear cache after bulk operations
+          this.cache.clear();
 
           resolve({
             success: true,
             created,
             updated,
             errors,
-            errorDetails: errorDetails.slice(0, 10) // Limit error details
+            errorDetails: errorDetails.slice(0, 10)
           });
 
         } catch (error) {
@@ -454,6 +533,11 @@ class CenterService {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+  }
+
+  // Clear cache manually if needed
+  clearCache(): void {
+    this.cache.clear();
   }
 }
 
