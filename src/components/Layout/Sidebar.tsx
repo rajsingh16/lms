@@ -56,6 +56,7 @@ const menuItems: MenuItem[] = [
           { id: 'villages', label: 'Villages', icon: null, path: '/loan/master/villages', module: 'loan', permission: 'read' },
           { id: 'clients', label: 'Clients', icon: null, path: '/loan/master/clients', module: 'loan', permission: 'read' },
           { id: 'products', label: 'Products', icon: null, path: '/loan/master/products', module: 'loan', permission: 'read' },
+          { id: 'product-groups', label: 'Product Groups', icon: null, path: '/loan/master/product-groups', module: 'loan', permission: 'read' },
           { id: 'districts', label: 'Districts', icon: null, path: '/loan/master/districts', module: 'loan', permission: 'read' },
           { id: 'insurance', label: 'Insurance', icon: null, path: '/loan/master/insurance', module: 'loan', permission: 'read' },
           { id: 'purpose', label: 'Purpose', icon: null, path: '/loan/master/purpose', module: 'loan', permission: 'read' },
@@ -299,7 +300,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
           <button
             onClick={() => toggleExpanded(item.id)}
             className={`w-full flex items-center justify-between px-3 py-2 text-left text-sm font-medium rounded-lg transition-colors duration-200 ${
-              level === 0 ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-600 hover:bg-gray-50'
+              level === 0 ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
           >
             <div className="flex items-center space-x-3">
@@ -317,10 +318,10 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
             to={item.path || '#'}
             className={`flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
               isItemActive
-                ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200 border-r-2 border-blue-700'
                 : level === 0
-                ? 'text-gray-700 hover:bg-gray-100'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
             onClick={() => window.innerWidth < 768 && onClose()}
           >
@@ -350,26 +351,26 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0 md:static md:z-auto`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-2">
             <CreditCard className="w-8 h-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900">LoanMS</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">LoanMS</span>
           </div>
           <button
             onClick={onClose}
-            className="md:hidden p-1 rounded-lg hover:bg-gray-100"
+            className="md:hidden p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* User info */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
@@ -377,12 +378,12 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
               </span>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">
                 {auth.user?.first_name} {auth.user?.last_name}
               </p>
               <div className="flex items-center space-x-1">
                 <Shield className="w-3 h-3 text-gray-400" />
-                <p className="text-xs text-gray-500 capitalize">
+                <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
                   {auth.user?.role?.replace('_', ' ')}
                 </p>
               </div>
@@ -396,11 +397,11 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-200 space-y-2">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
           <PermissionGuard roles={['admin']}>
             <Link
               to="/settings"
-              className="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+              className="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
             >
               <Settings className="w-5 h-5" />
               <span>Settings</span>
@@ -408,7 +409,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
           </PermissionGuard>
           <button
             onClick={logout}
-            className="w-full flex items-center space-x-3 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors duration-200"
+            className="w-full flex items-center space-x-3 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 transition-colors duration-200"
           >
             <LogOut className="w-5 h-5" />
             <span>Logout</span>

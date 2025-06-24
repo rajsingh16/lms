@@ -10,6 +10,10 @@ import { Dashboard } from './pages/Dashboard';
 import { Areas } from './pages/Loan/Master/Areas';
 import { Villages } from './pages/Loan/Master/Villages';
 import { Clients } from './pages/Loan/Master/Clients';
+import { Products } from './pages/Loan/Master/Products';
+import { ProductGroups } from './pages/Loan/Master/ProductGroups';
+import { Districts } from './pages/Loan/Master/Districts';
+import { Insurance } from './pages/Loan/Master/Insurance';
 import { LoanApplicationPage } from './pages/Loan/Transaction/LoanApplication';
 import { ProductBranchMappingPage } from './pages/Loan/Transaction/ProductBranchMapping';
 import { OverdueDashboardPage } from './pages/Loan/Dashboard/OverdueDashboard';
@@ -59,9 +63,10 @@ function AppRoutes() {
         <Route path="loan/master/areas" element={<Areas />} />
         <Route path="loan/master/villages" element={<Villages />} />
         <Route path="loan/master/clients" element={<Clients />} />
-        <Route path="loan/master/products" element={<PlaceholderPage title="Products" />} />
-        <Route path="loan/master/districts" element={<PlaceholderPage title="Districts" />} />
-        <Route path="loan/master/insurance" element={<PlaceholderPage title="Insurance" />} />
+        <Route path="loan/master/products" element={<Products />} />
+        <Route path="loan/master/product-groups" element={<ProductGroups />} />
+        <Route path="loan/master/districts" element={<Districts />} />
+        <Route path="loan/master/insurance" element={<Insurance />} />
         <Route path="loan/master/purpose" element={<PlaceholderPage title="Purpose" />} />
         
         <Route path="loan/transaction/application" element={<LoanApplicationPage />} />
