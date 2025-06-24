@@ -1,6 +1,7 @@
 import React from 'react';
-import { Menu, Bell, Search, User, LogOut, Settings } from 'lucide-react';
+import { Menu, Bell, User, LogOut, Settings, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -8,6 +9,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { auth, logout } = useAuth();
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   const handleLogout = async () => {
     await logout();
@@ -15,43 +17,45 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
   const getRoleColor = (role: string) => {
     const colors = {
-      admin: 'bg-purple-100 text-purple-800',
-      manager: 'bg-blue-100 text-blue-800',
-      finance_officer: 'bg-green-100 text-green-800',
-      loan_officer: 'bg-orange-100 text-orange-800',
-      field_officer: 'bg-yellow-100 text-yellow-800',
-      viewer: 'bg-gray-100 text-gray-800',
-      editor: 'bg-indigo-100 text-indigo-800',
+      admin: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+      manager: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      finance_officer: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      loan_officer: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+      field_officer: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+      viewer: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+      editor: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
     };
-    return colors[role as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[role as keyof typeof colors] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-4 py-3">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Left side */}
         <div className="flex items-center space-x-4">
           <button
             onClick={onMenuClick}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
           >
-            <Menu className="w-5 h-5 text-gray-700" />
+            <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          
-          <div className="relative hidden md:block">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="pl-10 pr-4 py-2 w-64 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
         </div>
 
         {/* Right side */}
         <div className="flex items-center space-x-4">
-          <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-            <Bell className="w-5 h-5 text-gray-700" />
+          <button 
+            onClick={toggleDarkMode}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+          >
+            {isDarkMode ? (
+              <Sun className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+            ) : (
+              <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+            )}
+          </button>
+
+          <button className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+            <Bell className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
               3
             </span>
@@ -66,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             <div className="hidden md:block">
               <div className="flex items-center space-x-2">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     {auth.user?.first_name} {auth.user?.last_name}
                   </p>
                   <div className="flex items-center space-x-2">
@@ -79,12 +83,12 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             </div>
             
             <div className="flex items-center space-x-1">
-              <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                <Settings className="w-4 h-4 text-gray-600" />
+              <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                <Settings className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </button>
               <button 
                 onClick={handleLogout}
-                className="p-2 rounded-lg hover:bg-red-50 transition-colors duration-200"
+                className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 transition-colors duration-200"
               >
                 <LogOut className="w-4 h-4 text-red-600" />
               </button>

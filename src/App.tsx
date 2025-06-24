@@ -1,36 +1,42 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { MainLayout } from './components/Layout/MainLayout';
 import { LoginPage } from './components/Auth/LoginPage';
 import { RegisterPage } from './components/Auth/RegisterPage';
 import { Dashboard } from './pages/Dashboard';
 import { Areas } from './pages/Loan/Master/Areas';
+import { Villages } from './pages/Loan/Master/Villages';
 import { Clients } from './pages/Loan/Master/Clients';
 import { LoanApplicationPage } from './pages/Loan/Transaction/LoanApplication';
 import { ProductBranchMappingPage } from './pages/Loan/Transaction/ProductBranchMapping';
 import { OverdueDashboardPage } from './pages/Loan/Dashboard/OverdueDashboard';
+import { useSessionTimeout } from './hooks/useSessionTimeout';
 
 // Placeholder components for other routes
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
   <div className="space-y-6">
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-      <p className="text-gray-600 mt-1">This page is under development</p>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
+      <p className="text-gray-600 dark:text-gray-400 mt-1">This page is under development</p>
     </div>
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 text-center">
+      <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
         <span className="text-2xl">🚧</span>
       </div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">Coming Soon</h3>
-      <p className="text-gray-600">This feature is currently under development and will be available soon.</p>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Coming Soon</h3>
+      <p className="text-gray-600 dark:text-gray-400">This feature is currently under development and will be available soon.</p>
     </div>
   </div>
 );
 
 function AppRoutes() {
   const { auth } = useAuth();
+  
+  // Initialize session timeout for authenticated users
+  useSessionTimeout();
 
   return (
     <Routes>
@@ -51,7 +57,7 @@ function AppRoutes() {
         
         {/* Loan Module Routes */}
         <Route path="loan/master/areas" element={<Areas />} />
-        <Route path="loan/master/villages" element={<PlaceholderPage title="Villages" />} />
+        <Route path="loan/master/villages" element={<Villages />} />
         <Route path="loan/master/clients" element={<Clients />} />
         <Route path="loan/master/products" element={<PlaceholderPage title="Products" />} />
         <Route path="loan/master/districts" element={<PlaceholderPage title="Districts" />} />
@@ -98,11 +104,13 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
