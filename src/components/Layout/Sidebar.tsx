@@ -81,7 +81,6 @@ const menuItems: MenuItem[] = [
           { id: 'death-case', label: 'Death Case', icon: null, path: '/loan/transaction/death-case', module: 'loan', permission: 'write' },
           { id: 'app-verification-admin', label: 'App Verification Admin', icon: null, path: '/loan/transaction/app-verification-admin', roles: ['admin', 'manager'] },
           { id: 'branch-audit', label: 'Branch Audit', icon: null, path: '/loan/transaction/branch-audit', roles: ['admin', 'manager'] },
-          { id: 'training', label: 'Training', icon: null, path: '/loan/transaction/training', module: 'loan', permission: 'read' },
         ]
       },
       {
@@ -91,29 +90,6 @@ const menuItems: MenuItem[] = [
         children: [
           { id: 'loan-summary', label: 'Loan Summary', icon: null, path: '/loan/reports/summary', module: 'loan', permission: 'read' },
           { id: 'repayment-details', label: 'Repayment Details', icon: null, path: '/loan/reports/repayment', module: 'loan', permission: 'read' },
-          { id: 'branch-day-close-report', label: 'Branch Day Close Report', icon: null, path: '/loan/reports/branch-day-close', module: 'loan', permission: 'read' },
-          { id: 'insurance-report', label: 'Insurance', icon: null, path: '/loan/reports/insurance', module: 'loan', permission: 'read' },
-          { id: 'due-vs-collection', label: 'Due vs Collection', icon: null, path: '/loan/reports/due-vs-collection', module: 'loan', permission: 'read' },
-          { id: 'agent-pool', label: 'Agent Pool', icon: null, path: '/loan/reports/agent-pool', module: 'loan', permission: 'read' },
-          { id: 'scv-report', label: 'SCV Report', icon: null, path: '/loan/reports/scv', module: 'loan', permission: 'read' },
-          { id: 'luc-report', label: 'LUC Report', icon: null, path: '/loan/reports/luc', module: 'loan', permission: 'read' },
-          { id: 'house-visit', label: 'House Visit', icon: null, path: '/loan/reports/house-visit', module: 'loan', permission: 'read' },
-          { id: 'cgt-grt-report', label: 'CGT/GRT Report', icon: null, path: '/loan/reports/cgt-grt', module: 'loan', permission: 'read' },
-          { id: 'login-report', label: 'Login Report', icon: null, path: '/loan/reports/login', roles: ['admin', 'manager'] },
-          { id: 'center-summary', label: 'Center Summary', icon: null, path: '/loan/reports/center-summary', module: 'loan', permission: 'read' },
-          { id: 'backdated-report', label: 'Backdated Report', icon: null, path: '/loan/reports/backdated', module: 'loan', permission: 'read' },
-          { id: 'loan-closure-report', label: 'Loan Closure Report', icon: null, path: '/loan/reports/loan-closure', module: 'loan', permission: 'read' },
-          { id: 'credit-bureau-report', label: 'Credit Bureau Report', icon: null, path: '/loan/reports/credit-bureau', module: 'loan', permission: 'read' },
-          { id: 'collection-details', label: 'Collection Details', icon: null, path: '/loan/reports/collection-details', module: 'loan', permission: 'read' },
-          { id: 'application-verification', label: 'Application Verification', icon: null, path: '/loan/reports/application-verification', module: 'loan', permission: 'read' },
-          { id: 'center-reports', label: 'Center Reports', icon: null, path: '/loan/reports/center-reports', module: 'loan', permission: 'read' },
-          { id: 'demand-vs-collection', label: 'Demand vs Collection', icon: null, path: '/loan/reports/demand-vs-collection', module: 'loan', permission: 'read' },
-          { id: 'disbursement-achievement', label: 'Disbursement Achievement', icon: null, path: '/loan/reports/disbursement-achievement', module: 'loan', permission: 'read' },
-          { id: 'bucket-comparison', label: 'Bucket Comparison', icon: null, path: '/loan/reports/bucket-comparison', module: 'loan', permission: 'read' },
-          { id: 'cgt-crt-pending', label: 'CGT/CRT Pending', icon: null, path: '/loan/reports/cgt-crt-pending', module: 'loan', permission: 'read' },
-          { id: 'recycle-loan-report', label: 'Recycle Loan Report', icon: null, path: '/loan/reports/recycle-loan', module: 'loan', permission: 'read' },
-          { id: 'white-board-report', label: 'White Board Report', icon: null, path: '/loan/reports/white-board', module: 'loan', permission: 'read' },
-          { id: 'business-opportunity-vs-actual', label: 'Business Opportunity vs Actual Disbursement', icon: null, path: '/loan/reports/business-opportunity-vs-actual', module: 'loan', permission: 'read' },
         ]
       },
       {
@@ -142,10 +118,6 @@ const menuItems: MenuItem[] = [
         children: [
           { id: 'account', label: 'Account', icon: null, path: '/finance/master/account', module: 'finance', permission: 'read' },
           { id: 'period', label: 'Period', icon: null, path: '/finance/master/period', module: 'finance', permission: 'read' },
-          { id: 'department', label: 'Department', icon: null, path: '/finance/master/department', module: 'finance', permission: 'read' },
-          { id: 'bank', label: 'Bank', icon: null, path: '/finance/master/bank', module: 'finance', permission: 'read' },
-          { id: 'voucher', label: 'Voucher', icon: null, path: '/finance/master/voucher', module: 'finance', permission: 'read' },
-          { id: 'vendor', label: 'Vendor', icon: null, path: '/finance/master/vendor', module: 'finance', permission: 'read' },
         ]
       },
       {
@@ -155,31 +127,8 @@ const menuItems: MenuItem[] = [
         children: [
           { id: 'voucher-reversal', label: 'Voucher Reversal', icon: null, path: '/finance/transaction/voucher-reversal', module: 'finance', permission: 'write' },
           { id: 'voucher-approval', label: 'Voucher Approval', icon: null, path: '/finance/transaction/voucher-approval', module: 'finance', permission: 'write' },
-          { id: 'voucher-booking', label: 'Voucher Booking', icon: null, path: '/finance/transaction/voucher-booking', module: 'finance', permission: 'write' },
-          { id: 'salary-uploader', label: 'Salary Uploader', icon: null, path: '/finance/transaction/salary-uploader', roles: ['admin', 'manager', 'finance_officer'] },
-          { id: 'bulk-voucher-uploader', label: 'Bulk Voucher Uploader', icon: null, path: '/finance/transaction/bulk-voucher-uploader', module: 'finance', permission: 'write' },
-          { id: 'bank-statement', label: 'Bank Statement', icon: null, path: '/finance/transaction/bank-statement', module: 'finance', permission: 'read' },
-          { id: 'account-clearing', label: 'Account Clearing', icon: null, path: '/finance/transaction/account-clearing', module: 'finance', permission: 'write' },
-          { id: 'clearing-reversal', label: 'Clearing Reversal', icon: null, path: '/finance/transaction/clearing-reversal', module: 'finance', permission: 'write' },
-          { id: 'receipt-payment', label: 'Receipt Payment', icon: null, path: '/finance/transaction/receipt-payment', module: 'finance', permission: 'write' },
         ]
       },
-      {
-        id: 'finance-reports',
-        label: 'Reports',
-        icon: <div className="w-2 h-2 bg-purple-500 rounded-full"></div>,
-        children: [
-          { id: 'voucher-summary', label: 'Voucher Summary', icon: null, path: '/finance/reports/voucher-summary', module: 'finance', permission: 'read' },
-          { id: 'trial-balance', label: 'Trial Balance', icon: null, path: '/finance/reports/trial-balance', module: 'finance', permission: 'read' },
-          { id: 'vendor-balances', label: 'Vendor Balances', icon: null, path: '/finance/reports/vendor-balances', module: 'finance', permission: 'read' },
-          { id: 'cash-book', label: 'Cash Book', icon: null, path: '/finance/reports/cash-book', module: 'finance', permission: 'read' },
-          { id: 'ledger-book-report', label: 'Ledger Book Report', icon: null, path: '/finance/reports/ledger-book', module: 'finance', permission: 'read' },
-          { id: 'trial-balance-branch-wise', label: 'Trial Balance Branch-Wise', icon: null, path: '/finance/reports/trial-balance-branch-wise', module: 'finance', permission: 'read' },
-          { id: 'receipt-payment-report', label: 'Receipt Payment Report', icon: null, path: '/finance/reports/receipt-payment', module: 'finance', permission: 'read' },
-          { id: 'journal-booked-report', label: 'Journal Booked Report', icon: null, path: '/finance/reports/journal-booked', module: 'finance', permission: 'read' },
-          { id: 'employee-balance', label: 'Employee Balance', icon: null, path: '/finance/reports/employee-balance', module: 'finance', permission: 'read' },
-        ]
-      }
     ]
   },
   {
@@ -195,30 +144,8 @@ const menuItems: MenuItem[] = [
         children: [
           { id: 'hr-department', label: 'Department', icon: null, path: '/hr/master/department', roles: ['admin', 'manager'] },
           { id: 'designation', label: 'Designation', icon: null, path: '/hr/master/designation', roles: ['admin', 'manager'] },
-          { id: 'functional-title', label: 'Functional Title', icon: null, path: '/hr/master/functional-title', roles: ['admin', 'manager'] },
-          { id: 'hr-users', label: 'Users', icon: null, path: '/hr/master/users', roles: ['admin', 'manager'] },
-          { id: 'employee', label: 'Employee', icon: null, path: '/hr/master/employee', roles: ['admin', 'manager'] },
         ]
       },
-      {
-        id: 'hr-transaction',
-        label: 'Transaction',
-        icon: <div className="w-2 h-2 bg-green-500 rounded-full"></div>,
-        children: [
-          { id: 'user-role-mapping', label: 'User Role Mapping', icon: null, path: '/hr/transaction/user-role-mapping', roles: ['admin'] },
-          { id: 'reset-password', label: 'Reset Password', icon: null, path: '/hr/transaction/reset-password', roles: ['admin', 'manager'] },
-          { id: 'employee-transfer', label: 'Employee Transfer', icon: null, path: '/hr/transaction/employee-transfer', roles: ['admin', 'manager'] },
-          { id: 'staff-attendance', label: 'Staff Attendance', icon: null, path: '/hr/transaction/staff-attendance', roles: ['admin', 'manager'] },
-        ]
-      },
-      {
-        id: 'hr-reports',
-        label: 'Reports',
-        icon: <div className="w-2 h-2 bg-purple-500 rounded-full"></div>,
-        children: [
-          { id: 'employee-movement', label: 'Employee Movement', icon: null, path: '/hr/reports/employee-movement', roles: ['admin', 'manager'] },
-        ]
-      }
     ]
   },
   {
@@ -236,14 +163,6 @@ const menuItems: MenuItem[] = [
           { id: 'funder', label: 'Funder', icon: null, path: '/funds/master/funder', roles: ['admin', 'manager', 'finance_officer'] },
         ]
       },
-      {
-        id: 'funds-transaction',
-        label: 'Transaction',
-        icon: <div className="w-2 h-2 bg-green-500 rounded-full"></div>,
-        children: [
-          { id: 'manual-allocation', label: 'Manual Allocation', icon: null, path: '/funds/transaction/manual-allocation', roles: ['admin', 'manager', 'finance_officer'] },
-        ]
-      }
     ]
   },
   {
@@ -293,20 +212,17 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
     // Find which menu item matches the current path
     let matchedItemId = '';
     
-    const findMatch = (items: MenuItem[]) => {
+    const findMatch = (items: MenuItem[], parentId = '') => {
       for (const item of items) {
+        const currentId = parentId ? `${parentId}-${item.id}` : item.id;
+        
         if (item.path === currentPath) {
-          matchedItemId = item.id;
+          matchedItemId = currentId;
           return true;
         }
-        if (item.children) {
-          if (findMatch(item.children)) {
-            // If match found in children, expand this parent
-            if (!matchedItemId.includes(item.id)) {
-              matchedItemId = `${item.id}-${matchedItemId}`;
-            }
-            return true;
-          }
+        
+        if (item.children && findMatch(item.children, currentId)) {
+          return true;
         }
       }
       return false;
@@ -319,12 +235,10 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
       const parts = matchedItemId.split('-');
       const parentIds: string[] = [];
       
-      for (let i = 0; i < parts.length; i++) {
-        if (i === 0) {
-          parentIds.push(parts[i]);
-        } else {
-          parentIds.push(`${parentIds[i-1]}-${parts[i]}`);
-        }
+      let currentId = '';
+      for (const part of parts) {
+        currentId = currentId ? `${currentId}-${part}` : part;
+        parentIds.push(currentId);
       }
       
       // Ensure all parent items are expanded
@@ -478,7 +392,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 overflow-y-auto p-4 space-y-2">
           {menuItems.map(item => renderMenuItem(item))}
         </nav>
 

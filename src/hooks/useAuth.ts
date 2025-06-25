@@ -83,6 +83,28 @@ export const useAuthState = () => {
           loading: false,
           userPermissions: permissionStrings,
         });
+      } else {
+        // If no profile exists but user is authenticated, create a minimal state
+        // This can happen during registration before profile is fully created
+        setAuthState({
+          user: {
+            id: supabaseUser.id,
+            email: supabaseUser.email || '',
+            username: '',
+            first_name: '',
+            last_name: '',
+            role: 'viewer',
+            branch_id: null,
+            status: 'active',
+            phone: null,
+            employee_id: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          isAuthenticated: true,
+          loading: false,
+          userPermissions: [],
+        });
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
@@ -113,7 +135,7 @@ export const useAuthState = () => {
     const { data: { subscription } } = auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         await loadUserProfile(session.user);
-      } else if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+      } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
         clearAuthState();
       }
     });

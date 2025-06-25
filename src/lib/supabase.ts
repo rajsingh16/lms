@@ -10,10 +10,17 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // Validate URL format
 if (!supabaseUrl.startsWith('https://') || !supabaseUrl.includes('.supabase.co')) {
-  throw new Error('Invalid Supabase URL format. Expected format: https://your-project.supabase.co');
+  console.warn('Unusual Supabase URL format. Expected format: https://your-project.supabase.co');
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'supabase.auth.token',
+  }
+});
 
 // Auth helper functions
 export const auth = {
