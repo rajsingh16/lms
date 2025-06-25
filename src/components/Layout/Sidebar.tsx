@@ -90,6 +90,31 @@ const menuItems: MenuItem[] = [
         children: [
           { id: 'loan-summary', label: 'Loan Summary', icon: null, path: '/loan/reports/summary', module: 'loan', permission: 'read' },
           { id: 'repayment-details', label: 'Repayment Details', icon: null, path: '/loan/reports/repayment', module: 'loan', permission: 'read' },
+          { id: 'branch-day-close-report', label: 'Branch Day Close', icon: null, path: '/loan/reports/branch-day-close', module: 'loan', permission: 'read' },
+          { id: 'employee-attendance', label: 'Employee Attendance', icon: null, path: '/loan/reports/employee-attendance', module: 'loan', permission: 'read' },
+          { id: 'death-report', label: 'Death Report', icon: null, path: '/loan/reports/death-report', module: 'loan', permission: 'read' },
+          { id: 'insurance-report', label: 'Insurance Report', icon: null, path: '/loan/reports/insurance', module: 'loan', permission: 'read' },
+          { id: 'due-vs-collection', label: 'Due vs Collection', icon: null, path: '/loan/reports/due-vs-collection', module: 'loan', permission: 'read' },
+          { id: 'agent-pool', label: 'Agent Pool', icon: null, path: '/loan/reports/agent-pool', module: 'loan', permission: 'read' },
+          { id: 'scv', label: 'SCV', icon: null, path: '/loan/reports/scv', module: 'loan', permission: 'read' },
+          { id: 'luc', label: 'LUC', icon: null, path: '/loan/reports/luc', module: 'loan', permission: 'read' },
+          { id: 'house-visit', label: 'House Visit', icon: null, path: '/loan/reports/house-visit', module: 'loan', permission: 'read' },
+          { id: 'cgt-grt', label: 'CGT/GRT', icon: null, path: '/loan/reports/cgt-grt', module: 'loan', permission: 'read' },
+          { id: 'login', label: 'Login', icon: null, path: '/loan/reports/login', module: 'loan', permission: 'read' },
+          { id: 'center-summary', label: 'Center Summary', icon: null, path: '/loan/reports/center-summary', module: 'loan', permission: 'read' },
+          { id: 'backdated', label: 'Backdated', icon: null, path: '/loan/reports/backdated', module: 'loan', permission: 'read' },
+          { id: 'loan-closure', label: 'Loan Closure', icon: null, path: '/loan/reports/loan-closure', module: 'loan', permission: 'read' },
+          { id: 'credit-bureau', label: 'Credit Bureau', icon: null, path: '/loan/reports/credit-bureau', module: 'loan', permission: 'read' },
+          { id: 'collection-details', label: 'Collection Details', icon: null, path: '/loan/reports/collection-details', module: 'loan', permission: 'read' },
+          { id: 'application-verification', label: 'Application Verification', icon: null, path: '/loan/reports/application-verification', module: 'loan', permission: 'read' },
+          { id: 'center-reports', label: 'Center Reports', icon: null, path: '/loan/reports/center-reports', module: 'loan', permission: 'read' },
+          { id: 'demand-vs-collection', label: 'Demand vs Collection', icon: null, path: '/loan/reports/demand-vs-collection', module: 'loan', permission: 'read' },
+          { id: 'disbursement-achievement', label: 'Disbursement Achievement', icon: null, path: '/loan/reports/disbursement-achievement', module: 'loan', permission: 'read' },
+          { id: 'bucket-comparison', label: 'Bucket Comparison', icon: null, path: '/loan/reports/bucket-comparison', module: 'loan', permission: 'read' },
+          { id: 'cgt-crt-pending', label: 'CGT/CRT Pending', icon: null, path: '/loan/reports/cgt-crt-pending', module: 'loan', permission: 'read' },
+          { id: 'recycle-loan', label: 'Recycle Loan', icon: null, path: '/loan/reports/recycle-loan', module: 'loan', permission: 'read' },
+          { id: 'white-board', label: 'White Board', icon: null, path: '/loan/reports/white-board', module: 'loan', permission: 'read' },
+          { id: 'business-opportunity-vs-actual', label: 'Business Opportunity vs Actual Disbursement', icon: null, path: '/loan/reports/business-opportunity-vs-actual', module: 'loan', permission: 'read' },
         ]
       },
       {
@@ -190,14 +215,28 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
         prev.filter(id => id !== itemId && !id.startsWith(`${itemId}-`))
       );
     } else {
-      // If expanding, collapse all other top-level items except this one
-      const topLevelItems = menuItems.map(item => item.id);
-      const otherTopLevelItems = topLevelItems.filter(id => id !== itemId);
+      // If expanding, collapse all other items at the same level
+      const parts = itemId.split('-');
+      const parentId = parts.slice(0, -1).join('-');
+      const siblingPrefix = parentId ? `${parentId}-` : '';
       
-      // Remove all other top-level items and their children
-      const filteredItems = expandedItems.filter(id => {
-        // Keep if it's not a top-level item or its child
-        return !otherTopLevelItems.some(topId => id === topId || id.startsWith(`${topId}-`));
+      // Get all current expanded items
+      const currentExpanded = [...expandedItems];
+      
+      // Find all siblings (items with same parent)
+      const siblings = currentExpanded.filter(id => {
+        const idParts = id.split('-');
+        // Remove the last part (the actual id)
+        const idParentParts = idParts.slice(0, -1);
+        const idParent = idParentParts.join('-');
+        
+        // Check if this item has the same parent
+        return idParent === parentId && id.startsWith(siblingPrefix) && id !== itemId;
+      });
+      
+      // Remove siblings and their children
+      const filteredItems = currentExpanded.filter(id => {
+        return !siblings.some(siblingId => id === siblingId || id.startsWith(`${siblingId}-`));
       });
       
       // Add the new item

@@ -33,6 +33,10 @@ import { OverdueDashboardPage } from './pages/Loan/Dashboard/OverdueDashboard';
 import { LoanSummary } from './pages/Loan/Reports/LoanSummary';
 import { RepaymentDetails } from './pages/Loan/Reports/RepaymentDetails';
 import { BranchDayCloseReport } from './pages/Loan/Reports/BranchDayCloseReport';
+import { EmployeeAttendanceReport } from './pages/Loan/Reports/EmployeeAttendanceReport';
+import { DeathReport } from './pages/Loan/Reports/DeathReport';
+import { InsuranceReport } from './pages/Loan/Reports/InsuranceReport';
+import { DueVsCollectionReport } from './pages/Loan/Reports/DueVsCollectionReport';
 import { useSessionTimeout } from './hooks/useSessionTimeout';
 
 // Placeholder components for other routes
@@ -103,8 +107,10 @@ function AppRoutes() {
         <Route path="loan/reports/summary" element={<LoanSummary />} />
         <Route path="loan/reports/repayment" element={<RepaymentDetails />} />
         <Route path="loan/reports/branch-day-close" element={<BranchDayCloseReport />} />
-        <Route path="loan/reports/insurance" element={<PlaceholderPage title="Insurance Report" />} />
-        <Route path="loan/reports/due-vs-collection" element={<PlaceholderPage title="Due vs Collection Report" />} />
+        <Route path="loan/reports/employee-attendance" element={<EmployeeAttendanceReport />} />
+        <Route path="loan/reports/death-report" element={<DeathReport />} />
+        <Route path="loan/reports/insurance" element={<InsuranceReport />} />
+        <Route path="loan/reports/due-vs-collection" element={<DueVsCollectionReport />} />
         <Route path="loan/reports/agent-pool" element={<PlaceholderPage title="Agent Pool Report" />} />
         <Route path="loan/reports/scv" element={<PlaceholderPage title="SCV Report" />} />
         <Route path="loan/reports/luc" element={<PlaceholderPage title="LUC Report" />} />
