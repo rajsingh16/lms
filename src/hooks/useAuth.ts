@@ -116,7 +116,10 @@ export const useAuthState = () => {
     // Check current session
     auth.getCurrentUser().then(({ user, error }) => {
       if (error) {
-        console.error('Error getting current user:', error);
+        // Only log as error if it's not the expected "Auth session missing!" message
+        if (error.message !== 'Auth session missing!') {
+          console.error('Error getting current user:', error);
+        }
         clearAuthState();
         return;
       }
@@ -127,7 +130,10 @@ export const useAuthState = () => {
         clearAuthState();
       }
     }).catch((error) => {
-      console.error('Error in getCurrentUser:', error);
+      // Only log as error if it's not the expected "Auth session missing!" message
+      if (error.message !== 'Auth session missing!') {
+        console.error('Error in getCurrentUser:', error);
+      }
       clearAuthState();
     });
 
@@ -214,7 +220,10 @@ export const useAuthState = () => {
     try {
       const { user, error } = await auth.getCurrentUser();
       if (error) {
-        console.error('Error refreshing user:', error);
+        // Only log as error if it's not the expected "Auth session missing!" message
+        if (error.message !== 'Auth session missing!') {
+          console.error('Error refreshing user:', error);
+        }
         clearAuthState();
         return;
       }
@@ -225,7 +234,10 @@ export const useAuthState = () => {
         clearAuthState();
       }
     } catch (error) {
-      console.error('Error in refreshUser:', error);
+      // Only log as error if it's not the expected "Auth session missing!" message
+      if (error.message !== 'Auth session missing!') {
+        console.error('Error in refreshUser:', error);
+      }
       clearAuthState();
     }
   };
