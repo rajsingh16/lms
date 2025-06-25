@@ -54,6 +54,15 @@ export const useAuthState = () => {
     userPermissions: [],
   });
 
+  const clearAuthState = () => {
+    setAuthState({
+      user: null,
+      isAuthenticated: false,
+      loading: false,
+      userPermissions: [],
+    });
+  };
+
   const loadUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
       const { data: profile, error } = await db.getUserProfile(supabaseUser.id);
@@ -77,31 +86,35 @@ export const useAuthState = () => {
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
-      setAuthState(prev => ({ ...prev, loading: false }));
+      clearAuthState();
     }
   };
 
   useEffect(() => {
     // Check current session
-    auth.getCurrentUser().then(({ user }) => {
+    auth.getCurrentUser().then(({ user, error }) => {
+      if (error) {
+        console.error('Error getting current user:', error);
+        clearAuthState();
+        return;
+      }
+      
       if (user) {
         loadUserProfile(user);
       } else {
-        setAuthState(prev => ({ ...prev, loading: false }));
+        clearAuthState();
       }
+    }).catch((error) => {
+      console.error('Error in getCurrentUser:', error);
+      clearAuthState();
     });
 
     // Listen for auth changes
     const { data: { subscription } } = auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         await loadUserProfile(session.user);
-      } else if (event === 'SIGNED_OUT') {
-        setAuthState({
-          user: null,
-          isAuthenticated: false,
-          loading: false,
-          userPermissions: [],
-        });
+      } else if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+        clearAuthState();
       }
     });
 
@@ -114,7 +127,7 @@ export const useAuthState = () => {
       const { data, error } = await auth.signIn(email, password);
       
       if (error) {
-        setAuthState(prev => ({ ...prev, loading: false }));
+        clearAuthState();
         return { success: false, error: error.message };
       }
 
@@ -123,15 +136,23 @@ export const useAuthState = () => {
         return { success: true };
       }
 
+      clearAuthState();
       return { success: false, error: 'Login failed' };
     } catch (error) {
-      setAuthState(prev => ({ ...prev, loading: false }));
+      clearAuthState();
       return { success: false, error: 'An unexpected error occurred' };
     }
   };
 
   const logout = async (): Promise<void> => {
-    await auth.signOut();
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      // Always clear the local auth state regardless of signOut success/failure
+      clearAuthState();
+    }
   };
 
   const register = async (userData: RegisterData): Promise<{ success: boolean; error?: string }> => {
@@ -168,9 +189,22 @@ export const useAuthState = () => {
   };
 
   const refreshUser = async (): Promise<void> => {
-    const { user } = await auth.getCurrentUser();
-    if (user) {
-      await loadUserProfile(user);
+    try {
+      const { user, error } = await auth.getCurrentUser();
+      if (error) {
+        console.error('Error refreshing user:', error);
+        clearAuthState();
+        return;
+      }
+      
+      if (user) {
+        await loadUserProfile(user);
+      } else {
+        clearAuthState();
+      }
+    } catch (error) {
+      console.error('Error in refreshUser:', error);
+      clearAuthState();
     }
   };
 
