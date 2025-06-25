@@ -18,7 +18,17 @@ import { Pincode } from './pages/Loan/Master/Pincode';
 import { IFSC } from './pages/Loan/Master/IFSC';
 import { Purpose } from './pages/Loan/Master/Purpose';
 import { LoanApplicationPage } from './pages/Loan/Transaction/LoanApplication';
+import { LoanDetailsPage } from './pages/Loan/Transaction/LoanDetails';
+import { CreditBureauPage } from './pages/Loan/Transaction/CreditBureau';
+import { NEFTDisbursementPage } from './pages/Loan/Transaction/NEFTDisbursement';
+import { WriteOffPage } from './pages/Loan/Transaction/WriteOff';
+import { CenterTransferPage } from './pages/Loan/Transaction/CenterTransfer';
+import { CenterMeetingPage } from './pages/Loan/Transaction/CenterMeeting';
+import { BranchDayClosePage } from './pages/Loan/Transaction/BranchDayClose';
+import { DeathCasePage } from './pages/Loan/Transaction/DeathCase';
+import { AppVerificationAdminPage } from './pages/Loan/Transaction/AppVerificationAdmin';
 import { ProductBranchMappingPage } from './pages/Loan/Transaction/ProductBranchMapping';
+import { BranchAuditPage } from './pages/Loan/Transaction/BranchAudit';
 import { OverdueDashboardPage } from './pages/Loan/Dashboard/OverdueDashboard';
 import { useSessionTimeout } from './hooks/useSessionTimeout';
 
@@ -75,12 +85,17 @@ function AppRoutes() {
         <Route path="loan/master/purpose" element={<Purpose />} />
         
         <Route path="loan/transaction/application" element={<LoanApplicationPage />} />
-        <Route path="loan/transaction/details" element={<PlaceholderPage title="Loan Details" />} />
-        <Route path="loan/transaction/credit-bureau" element={<PlaceholderPage title="Credit Bureau" />} />
-        <Route path="loan/transaction/neft" element={<PlaceholderPage title="NEFT Disbursement" />} />
+        <Route path="loan/transaction/details" element={<LoanDetailsPage />} />
+        <Route path="loan/transaction/credit-bureau" element={<CreditBureauPage />} />
+        <Route path="loan/transaction/neft" element={<NEFTDisbursementPage />} />
+        <Route path="loan/transaction/write-off" element={<WriteOffPage />} />
+        <Route path="loan/transaction/center-transfer" element={<CenterTransferPage />} />
+        <Route path="loan/transaction/meeting" element={<CenterMeetingPage />} />
+        <Route path="loan/transaction/day-close" element={<BranchDayClosePage />} />
+        <Route path="loan/transaction/death-case" element={<DeathCasePage />} />
+        <Route path="loan/transaction/app-verification-admin" element={<AppVerificationAdminPage />} />
         <Route path="loan/transaction/product-branch-mapping" element={<ProductBranchMappingPage />} />
-        <Route path="loan/transaction/meeting" element={<PlaceholderPage title="Center Meeting" />} />
-        <Route path="loan/transaction/day-close" element={<PlaceholderPage title="Branch Day Close" />} />
+        <Route path="loan/transaction/branch-audit" element={<BranchAuditPage />} />
         
         <Route path="loan/reports/summary" element={<PlaceholderPage title="Loan Summary" />} />
         <Route path="loan/reports/repayment" element={<PlaceholderPage title="Repayment Details" />} />
