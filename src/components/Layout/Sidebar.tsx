@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -73,12 +73,13 @@ const menuItems: MenuItem[] = [
           { id: 'loan-details', label: 'Loan Details', icon: null, path: '/loan/transaction/details', module: 'loan', permission: 'read' },
           { id: 'credit-bureau', label: 'Credit Bureau', icon: null, path: '/loan/transaction/credit-bureau', module: 'loan', permission: 'read' },
           { id: 'neft-disbursement', label: 'NEFT Disbursement', icon: null, path: '/loan/transaction/neft', module: 'loan', permission: 'write' },
+          { id: 'write-off', label: 'Write Off', icon: null, path: '/loan/transaction/write-off', module: 'loan', permission: 'write' },
+          { id: 'center-transfer', label: 'Center Transfer', icon: null, path: '/loan/transaction/center-transfer', module: 'loan', permission: 'write' },
           { id: 'product-branch-mapping', label: 'Product Branch Mapping', icon: null, path: '/loan/transaction/product-branch-mapping', roles: ['admin', 'manager'] },
           { id: 'center-meeting', label: 'Center Meeting', icon: null, path: '/loan/transaction/meeting', module: 'loan', permission: 'write' },
           { id: 'branch-day-close', label: 'Branch Day Close', icon: null, path: '/loan/transaction/day-close', roles: ['admin', 'manager'] },
           { id: 'death-case', label: 'Death Case', icon: null, path: '/loan/transaction/death-case', module: 'loan', permission: 'write' },
           { id: 'app-verification-admin', label: 'App Verification Admin', icon: null, path: '/loan/transaction/app-verification-admin', roles: ['admin', 'manager'] },
-          { id: 'branch-product-mapping', label: 'Branch Product Mapping', icon: null, path: '/loan/transaction/branch-product-mapping', roles: ['admin', 'manager'] },
           { id: 'branch-audit', label: 'Branch Audit', icon: null, path: '/loan/transaction/branch-audit', roles: ['admin', 'manager'] },
           { id: 'training', label: 'Training', icon: null, path: '/loan/transaction/training', module: 'loan', permission: 'read' },
         ]
@@ -262,13 +263,82 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
   const navigate = useNavigate();
   const { auth, logout, hasRole, hasPermission } = useAuth();
 
+  // Close other menu items when a new one is expanded
   const toggleExpanded = (itemId: string) => {
-    setExpandedItems(prev =>
-      prev.includes(itemId)
-        ? prev.filter(id => id !== itemId && !id.startsWith(`${itemId}-`))
-        : [...prev, itemId]
-    );
+    if (expandedItems.includes(itemId)) {
+      // If already expanded, collapse it and its children
+      setExpandedItems(prev =>
+        prev.filter(id => id !== itemId && !id.startsWith(`${itemId}-`))
+      );
+    } else {
+      // If expanding, collapse all other top-level items except this one
+      const topLevelItems = menuItems.map(item => item.id);
+      const otherTopLevelItems = topLevelItems.filter(id => id !== itemId);
+      
+      // Remove all other top-level items and their children
+      const filteredItems = expandedItems.filter(id => {
+        // Keep if it's not a top-level item or its child
+        return !otherTopLevelItems.some(topId => id === topId || id.startsWith(`${topId}-`));
+      });
+      
+      // Add the new item
+      setExpandedItems([...filteredItems, itemId]);
+    }
   };
+
+  // Update expanded items based on current path
+  useEffect(() => {
+    const currentPath = location.pathname;
+    
+    // Find which menu item matches the current path
+    let matchedItemId = '';
+    
+    const findMatch = (items: MenuItem[]) => {
+      for (const item of items) {
+        if (item.path === currentPath) {
+          matchedItemId = item.id;
+          return true;
+        }
+        if (item.children) {
+          if (findMatch(item.children)) {
+            // If match found in children, expand this parent
+            if (!matchedItemId.includes(item.id)) {
+              matchedItemId = `${item.id}-${matchedItemId}`;
+            }
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    
+    findMatch(menuItems);
+    
+    if (matchedItemId) {
+      // Extract all parent IDs from the matched path
+      const parts = matchedItemId.split('-');
+      const parentIds: string[] = [];
+      
+      for (let i = 0; i < parts.length; i++) {
+        if (i === 0) {
+          parentIds.push(parts[i]);
+        } else {
+          parentIds.push(`${parentIds[i-1]}-${parts[i]}`);
+        }
+      }
+      
+      // Ensure all parent items are expanded
+      setExpandedItems(prev => {
+        const newExpanded = [...prev];
+        for (const id of parentIds) {
+          if (!newExpanded.includes(id)) {
+            newExpanded.push(id);
+          }
+        }
+        return newExpanded;
+      });
+    }
+  }, [location.pathname]);
 
   const isActive = (path?: string) => {
     return path && location.pathname === path;

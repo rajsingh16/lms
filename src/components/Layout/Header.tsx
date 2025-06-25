@@ -77,12 +77,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                 </div>
               </div>
             </div>
-            
-            <div className="flex items-center">
-              <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-                <Settings className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              </button>
-            </div>
           </div>
         </div>
       </div>
