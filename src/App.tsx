@@ -30,6 +30,9 @@ import { AppVerificationAdminPage } from './pages/Loan/Transaction/AppVerificati
 import { ProductBranchMappingPage } from './pages/Loan/Transaction/ProductBranchMapping';
 import { BranchAuditPage } from './pages/Loan/Transaction/BranchAudit';
 import { OverdueDashboardPage } from './pages/Loan/Dashboard/OverdueDashboard';
+import { LoanSummary } from './pages/Loan/Reports/LoanSummary';
+import { RepaymentDetails } from './pages/Loan/Reports/RepaymentDetails';
+import { BranchDayCloseReport } from './pages/Loan/Reports/BranchDayCloseReport';
 import { useSessionTimeout } from './hooks/useSessionTimeout';
 
 // Placeholder components for other routes
@@ -97,8 +100,31 @@ function AppRoutes() {
         <Route path="loan/transaction/product-branch-mapping" element={<ProductBranchMappingPage />} />
         <Route path="loan/transaction/branch-audit" element={<BranchAuditPage />} />
         
-        <Route path="loan/reports/summary" element={<PlaceholderPage title="Loan Summary" />} />
-        <Route path="loan/reports/repayment" element={<PlaceholderPage title="Repayment Details" />} />
+        <Route path="loan/reports/summary" element={<LoanSummary />} />
+        <Route path="loan/reports/repayment" element={<RepaymentDetails />} />
+        <Route path="loan/reports/branch-day-close" element={<BranchDayCloseReport />} />
+        <Route path="loan/reports/insurance" element={<PlaceholderPage title="Insurance Report" />} />
+        <Route path="loan/reports/due-vs-collection" element={<PlaceholderPage title="Due vs Collection Report" />} />
+        <Route path="loan/reports/agent-pool" element={<PlaceholderPage title="Agent Pool Report" />} />
+        <Route path="loan/reports/scv" element={<PlaceholderPage title="SCV Report" />} />
+        <Route path="loan/reports/luc" element={<PlaceholderPage title="LUC Report" />} />
+        <Route path="loan/reports/house-visit" element={<PlaceholderPage title="House Visit Report" />} />
+        <Route path="loan/reports/cgt-grt" element={<PlaceholderPage title="CGT/GRT Report" />} />
+        <Route path="loan/reports/login" element={<PlaceholderPage title="Login Report" />} />
+        <Route path="loan/reports/center-summary" element={<PlaceholderPage title="Center Summary Report" />} />
+        <Route path="loan/reports/backdated" element={<PlaceholderPage title="Backdated Report" />} />
+        <Route path="loan/reports/loan-closure" element={<PlaceholderPage title="Loan Closure Report" />} />
+        <Route path="loan/reports/credit-bureau" element={<PlaceholderPage title="Credit Bureau Report" />} />
+        <Route path="loan/reports/collection-details" element={<PlaceholderPage title="Collection Details Report" />} />
+        <Route path="loan/reports/application-verification" element={<PlaceholderPage title="Application Verification Report" />} />
+        <Route path="loan/reports/center-reports" element={<PlaceholderPage title="Center Reports" />} />
+        <Route path="loan/reports/demand-vs-collection" element={<PlaceholderPage title="Demand vs Collection Report" />} />
+        <Route path="loan/reports/disbursement-achievement" element={<PlaceholderPage title="Disbursement Achievement Report" />} />
+        <Route path="loan/reports/bucket-comparison" element={<PlaceholderPage title="Bucket Comparison Report" />} />
+        <Route path="loan/reports/cgt-crt-pending" element={<PlaceholderPage title="CGT/CRT Pending Report" />} />
+        <Route path="loan/reports/recycle-loan" element={<PlaceholderPage title="Recycle Loan Report" />} />
+        <Route path="loan/reports/white-board" element={<PlaceholderPage title="White Board Report" />} />
+        <Route path="loan/reports/business-opportunity-vs-actual" element={<PlaceholderPage title="Business Opportunity vs Actual Disbursement Report" />} />
         
         <Route path="loan/dashboard/collection" element={<PlaceholderPage title="Collection Dashboard" />} />
         <Route path="loan/dashboard/overdue" element={<OverdueDashboardPage />} />
