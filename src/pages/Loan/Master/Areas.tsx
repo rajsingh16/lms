@@ -4,6 +4,7 @@ import { AreaFilterDropdown } from '../../../components/Common/AreaFilterDropdow
 import { AreaForm } from '../../../components/Forms/AreaForm';
 import { CSVUpload } from '../../../components/Common/CSVUpload';
 import { PermissionGuard } from '../../../components/Common/PermissionGuard';
+import { DataTable } from '../../../components/Common/DataTable';
 import { LoanArea, AreaFormData, AreaFilterOptions } from '../../../types';
 import { useAuth } from '../../../hooks/useAuth';
 import { areaService } from '../../../services/areaService';
@@ -40,6 +41,7 @@ export const Areas: React.FC = () => {
   const [editingArea, setEditingArea] = useState<LoanArea | null>(null);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const areaTypes = Array.from(new Set(areas.map(a => a.areaType)));
   const areaCodes = Array.from(new Set(areas.map(a => a.areaCode)));
@@ -81,6 +83,7 @@ export const Areas: React.FC = () => {
 
   const handleAddArea = async (formData: AreaFormData) => {
     try {
+      setIsSubmitting(true);
       const newArea = await areaService.createArea(formData);
       setAreas(prev => [...prev, newArea]);
       setFilteredAreas(prev => [...prev, newArea]);
@@ -90,6 +93,8 @@ export const Areas: React.FC = () => {
     } catch (err) {
       setError('Failed to create area');
       console.error('Error creating area:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -101,6 +106,7 @@ export const Areas: React.FC = () => {
     if (!editingArea) return;
 
     try {
+      setIsSubmitting(true);
       const updatedArea = await areaService.updateArea(editingArea.id, formData);
       setAreas(prev => prev.map(a => a.id === editingArea.id ? updatedArea : a));
       setFilteredAreas(prev => prev.map(a => a.id === editingArea.id ? updatedArea : a));
@@ -110,6 +116,8 @@ export const Areas: React.FC = () => {
     } catch (err) {
       setError('Failed to update area');
       console.error('Error updating area:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -193,7 +201,7 @@ export const Areas: React.FC = () => {
           <PermissionGuard module="loan" permission="write">
             <button
               onClick={() => handleEditArea(row)}
-              className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors duration-200"
+              className="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors duration-200"
               title="Edit"
             >
               <Edit className="w-4 h-4" />
@@ -202,7 +210,7 @@ export const Areas: React.FC = () => {
           <PermissionGuard module="loan" permission="delete">
             <button
               onClick={() => handleDeleteArea(row.id)}
-              className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors duration-200"
+              className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors duration-200"
               title="Delete"
             >
               <Trash2 className="w-4 h-4" />
@@ -216,7 +224,7 @@ export const Areas: React.FC = () => {
       label: 'Area Type',
       sortable: true,
       render: (value: string) => (
-        <span className="inline-flex px-2 py-1 text-xs rounded-full font-medium bg-blue-100 text-blue-800">
+        <span className="inline-flex px-2 py-1 text-xs rounded-full font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
           {value}
         </span>
       )
@@ -270,8 +278,8 @@ export const Areas: React.FC = () => {
           {getStatusIcon(value)}
           <span className={`inline-flex px-2 py-1 text-xs rounded-full font-medium ${
             value === 'active' 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-red-100 text-red-800'
+              ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' 
+              : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'
           }`}>
             {value.charAt(0).toUpperCase() + value.slice(1)}
           </span>
@@ -464,130 +472,81 @@ export const Areas: React.FC = () => {
     }
   ];
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-64">
-        <div className="flex items-center space-x-3">
-          <Loader className="w-6 h-6 animate-spin text-blue-600" />
-          <span className="text-gray-600">Loading areas...</span>
-        </div>
-      </div>
-    );
-  }
+  const handleAddClick = () => {
+    setShowAddModal(true);
+  };
+
+  const filterComponent = (
+    <div className="flex items-center space-x-3">
+      <AreaFilterDropdown
+        onFilter={handleFilter}
+        areaTypes={areaTypes}
+        areaCodes={areaCodes}
+        parentAreaCodes={parentAreaCodes}
+      />
+      
+      <PermissionGuard module="loan" permission="read">
+        <button
+          onClick={handleDownloadTemplate}
+          className="flex items-center space-x-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 dark:text-white"
+        >
+          <FileDown className="w-4 h-4" />
+          <span>Template</span>
+        </button>
+      </PermissionGuard>
+      
+      <PermissionGuard module="loan" permission="read">
+        <button
+          onClick={handleExportCSV}
+          className="flex items-center space-x-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 dark:text-white"
+        >
+          <Download className="w-4 h-4" />
+          <span>Export CSV</span>
+        </button>
+      </PermissionGuard>
+
+      <PermissionGuard module="loan" permission="write">
+        <button
+          onClick={() => setShowCSVModal(true)}
+          className="flex items-center space-x-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 dark:text-white"
+        >
+          <Upload className="w-4 h-4" />
+          <span>Upload CSV</span>
+        </button>
+      </PermissionGuard>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Areas</h1>
-        <p className="text-gray-600 mt-1">Manage loan areas and their configurations</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Areas</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage loan areas and their configurations</p>
       </div>
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center space-x-2">
+        <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg flex items-center space-x-2">
           <CheckCircle className="w-5 h-5 flex-shrink-0" />
           <span>{success}</span>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center space-x-2">
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg flex items-center space-x-2">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">Area Management</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                {filteredAreas.length} records found
-              </p>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <AreaFilterDropdown
-                onFilter={handleFilter}
-                areaTypes={areaTypes}
-                areaCodes={areaCodes}
-                parentAreaCodes={parentAreaCodes}
-              />
-              
-              <PermissionGuard module="loan" permission="read">
-                <button
-                  onClick={handleDownloadTemplate}
-                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <FileDown className="w-4 h-4" />
-                  <span>Template</span>
-                </button>
-              </PermissionGuard>
-              
-              <PermissionGuard module="loan" permission="read">
-                <button
-                  onClick={handleExportCSV}
-                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Export CSV</span>
-                </button>
-              </PermissionGuard>
-
-              <PermissionGuard module="loan" permission="write">
-                <button
-                  onClick={() => setShowCSVModal(true)}
-                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <Upload className="w-4 h-4" />
-                  <span>Upload CSV</span>
-                </button>
-              </PermissionGuard>
-              
-              <PermissionGuard module="loan" permission="write">
-                <button
-                  onClick={() => setShowAddModal(true)}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                >
-                  <span>Add New</span>
-                </button>
-              </PermissionGuard>
-            </div>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                {columns.map((column) => (
-                  <th
-                    key={column.key}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
-                  >
-                    {column.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredAreas.map((area, index) => (
-                <tr
-                  key={area.id}
-                  className="hover:bg-gray-50 transition-colors duration-200"
-                >
-                  {columns.map((column) => (
-                    <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {column.render ? column.render(area[column.key as keyof LoanArea], area) : area[column.key as keyof LoanArea]}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={columns}
+        data={filteredAreas}
+        title="Area Management"
+        loading={loading}
+        onAdd={handleAddClick}
+        filterComponent={filterComponent}
+      />
 
       {/* Add Area Modal */}
       <Modal
@@ -599,6 +558,7 @@ export const Areas: React.FC = () => {
         <AreaForm
           onSubmit={handleAddArea}
           onCancel={() => setShowAddModal(false)}
+          isSubmitting={isSubmitting}
         />
       </Modal>
 
@@ -642,6 +602,7 @@ export const Areas: React.FC = () => {
               isClientSourcingEnabled: editingArea.isClientSourcingEnabled,
               isCenterFormationEnabled: editingArea.isCenterFormationEnabled,
             }}
+            isSubmitting={isSubmitting}
           />
         )}
       </Modal>

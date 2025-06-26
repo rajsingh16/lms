@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Download, 
@@ -15,6 +15,7 @@ import {
   CheckCircle,
   XCircle
 } from 'lucide-react';
+import { Pagination } from '../../../components/Common/Pagination';
 
 interface LoanSummaryRecord {
   loanCode: string;
@@ -442,229 +443,143 @@ const LoanSummaryFilterDropdown: React.FC<{
 };
 
 export const LoanSummary: React.FC = () => {
-  const [records, setRecords] = useState<LoanSummaryRecord[]>([
-    {
-      loanCode: 'LN001',
-      clientCode: 'CL001',
-      productId: 'P001',
-      productCode: 'MF001',
-      principalAmount: 50000,
-      principalOutstanding: 45000,
-      interestAmount: 5000,
-      interestOutstanding: 4000,
-      interestRate: 12.5,
-      processingFee: 1000,
-      tenureInMonths: 12,
-      totalInstallments: 12,
-      installmentsOutstanding: 10,
-      insuranceId: 'INS001',
-      insuranceCode: 'LIFE001',
-      disbursementDate: '2024-01-20',
-      centerId: 'CTR001',
-      centerCode: 'ANC001',
-      centerName: 'Anand Nagar Center',
-      foId: 'FO001',
-      foName: 'Amit Kumar',
-      branchId: 'BR001',
-      branchCode: 'MBR001',
-      branchName: 'Main Branch',
-      divisionId: 'DIV001',
-      divisionCode: 'CDIV001',
-      divisionName: 'Central Division',
-      centerGroupCode: 'CG001',
-      purpose: 'Business',
-      subPurpose: 'Small Business',
-      repaymentFrequency: 'Monthly',
-      fundSequenceNumber: 'FSN001',
-      allocationDate: '2024-01-15',
-      loanCreatedOn: '2024-01-18',
-      loanClosureDate: '',
-      neftDate: '2024-01-21',
-      paymentDoneFrom: 'Branch',
-      maturityDate: '2025-01-20',
-      insuranceFee: 500,
-      firstName: 'Priya',
-      lastName: 'Sharma',
-      reservationCategory: 'General',
-      gender: 'Female',
-      caste: 'General',
-      dob: '1985-06-15',
-      age: 38,
-      maritalStatus: 'Married',
-      totalIncome: 25000,
-      totalExpense: 15000,
-      religion: 'Hindu',
-      sourceOfIncome: 'Business',
-      annualIncome: 300000,
-      loanCycle: 1,
-      aadhaarNumber: '1234-5678-9012',
-      loanStatus: 'active',
-      productName: 'Micro Finance Loan',
-      voterCardNumber: 'ABC1234567',
-      rationCardNumber: 'RAT1234567',
-      extLoanId: 'EXT001',
-      extLanNo: 'LAN001',
-      extCustId: 'CUST001',
-      bcPartnerId: 'BCP001',
-      centerDay: 'Monday',
-      mobileNumber: '+91 9876543210',
-      isDeathTagged: false,
-      stateName: 'Delhi',
-      zoneId: 'ZN001',
-      zoneCode: 'NZ001',
-      zoneName: 'North Zone',
-      villageId: 'VIL001',
-      villageCode: 'RAM001',
-      villageName: 'Rampur',
-      kycId: '1234-5678-9012',
-      kycType: 'Aadhaar',
-      netPayableAmount: 49500,
-      altContactNumber: '+91 9876543211',
-      parDays: 0,
-      principalArrears: 0,
-      interestArrears: 0,
-      totalArrears: 0,
-      lastDueDate: '2024-02-20',
-      principalCollected: 5000,
-      interestCollected: 1000,
-      lastCollDate: '2024-02-20',
-      parDaysAnswer: 0,
-      lastCollAmount: 6000,
-      parInstallmentDue: 0,
-      par30: false,
-      par90: false,
-      parAbove90: false,
-      parStatus: 'Regular',
-      nomineeName: 'Rahul Sharma',
-      coApplicantName: '',
-      qctAgent: 'QCT001',
-      qctAgentName: 'Rajesh Verma',
-      acmCode: 'ACM001',
-      acmName: 'Sunil Kumar',
-      dcmCode: 'DCM001',
-      dcmName: 'Vikram Singh',
-      zmCode: 'ZM001',
-      zmName: 'Anil Kapoor',
-      neftTransactionNumber: 'NEFT001',
-      disbursedBy: 'Manager User',
-      modeOfDisbursement: 'NEFT',
-      lastCollectionMode: 'Cash',
-      lastCollectionTransactionId: 'COLL001'
-    },
-    {
-      loanCode: 'LN002',
-      clientCode: 'CL002',
-      productId: 'P002',
-      productCode: 'GL001',
-      principalAmount: 75000,
-      principalOutstanding: 70000,
-      interestAmount: 7500,
-      interestOutstanding: 7000,
-      interestRate: 10.5,
-      processingFee: 1500,
-      tenureInMonths: 18,
-      totalInstallments: 18,
-      installmentsOutstanding: 17,
-      insuranceId: 'INS002',
-      insuranceCode: 'HEALTH001',
-      disbursementDate: '2024-01-18',
-      centerId: 'CTR002',
-      centerCode: 'GCC002',
-      centerName: 'Gandhi Colony Center',
-      foId: 'FO002',
-      foName: 'Neha Gupta',
-      branchId: 'BR002',
-      branchCode: 'NBR002',
-      branchName: 'North Branch',
-      divisionId: 'DIV002',
-      divisionCode: 'NDIV002',
-      divisionName: 'North Division',
-      centerGroupCode: 'CG002',
-      purpose: 'Agriculture',
-      subPurpose: 'Crop Loan',
-      repaymentFrequency: 'Monthly',
-      fundSequenceNumber: 'FSN002',
-      allocationDate: '2024-01-14',
-      loanCreatedOn: '2024-01-16',
-      loanClosureDate: '',
-      neftDate: '2024-01-19',
-      paymentDoneFrom: 'Branch',
-      maturityDate: '2025-07-18',
-      insuranceFee: 750,
-      firstName: 'Rajesh',
-      lastName: 'Kumar',
-      reservationCategory: 'OBC',
-      gender: 'Male',
-      caste: 'OBC',
-      dob: '1980-03-22',
-      age: 43,
-      maritalStatus: 'Married',
-      totalIncome: 20000,
-      totalExpense: 12000,
-      religion: 'Hindu',
-      sourceOfIncome: 'Agriculture',
-      annualIncome: 240000,
-      loanCycle: 2,
-      aadhaarNumber: '2345-6789-0123',
-      loanStatus: 'active',
-      productName: 'Group Loan',
-      voterCardNumber: 'DEF2345678',
-      rationCardNumber: 'RAT2345678',
-      extLoanId: 'EXT002',
-      extLanNo: 'LAN002',
-      extCustId: 'CUST002',
-      bcPartnerId: 'BCP002',
-      centerDay: 'Wednesday',
-      mobileNumber: '+91 9876543211',
-      isDeathTagged: false,
-      stateName: 'Delhi',
-      zoneId: 'ZN001',
-      zoneCode: 'NZ001',
-      zoneName: 'North Zone',
-      villageId: 'VIL002',
-      villageCode: 'SHY001',
-      villageName: 'Shyampur',
-      kycId: '2345-6789-0123',
-      kycType: 'Aadhaar',
-      netPayableAmount: 74250,
-      altContactNumber: '+91 9876543212',
-      parDays: 0,
-      principalArrears: 0,
-      interestArrears: 0,
-      totalArrears: 0,
-      lastDueDate: '2024-02-18',
-      principalCollected: 5000,
-      interestCollected: 500,
-      lastCollDate: '2024-02-18',
-      parDaysAnswer: 0,
-      lastCollAmount: 5500,
-      parInstallmentDue: 0,
-      par30: false,
-      par90: false,
-      parAbove90: false,
-      parStatus: 'Regular',
-      nomineeName: 'Mohan Kumar',
-      coApplicantName: 'Sunita Kumar',
-      qctAgent: 'QCT002',
-      qctAgentName: 'Sanjay Gupta',
-      acmCode: 'ACM002',
-      acmName: 'Manoj Tiwari',
-      dcmCode: 'DCM001',
-      dcmName: 'Vikram Singh',
-      zmCode: 'ZM001',
-      zmName: 'Anil Kapoor',
-      neftTransactionNumber: 'NEFT002',
-      disbursedBy: 'Manager User',
-      modeOfDisbursement: 'NEFT',
-      lastCollectionMode: 'Cash',
-      lastCollectionTransactionId: 'COLL002'
-    }
-  ]);
-  
-  const [filteredRecords, setFilteredRecords] = useState<LoanSummaryRecord[]>(records);
-  const [loading, setLoading] = useState(false);
+  const [records, setRecords] = useState<LoanSummaryRecord[]>([]);
+  const [filteredRecords, setFilteredRecords] = useState<LoanSummaryRecord[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  // Sample data generation for demonstration
+  useEffect(() => {
+    const generateSampleData = () => {
+      const sampleData: LoanSummaryRecord[] = [];
+      
+      for (let i = 1; i <= 100; i++) {
+        sampleData.push({
+          loanCode: `LN${String(i).padStart(3, '0')}`,
+          clientCode: `CL${String(i).padStart(3, '0')}`,
+          productId: `P${String(Math.ceil(i/20)).padStart(3, '0')}`,
+          productCode: i % 2 === 0 ? 'MF001' : 'GL001',
+          principalAmount: 50000 + (i * 1000),
+          principalOutstanding: 45000 + (i * 800),
+          interestAmount: 5000 + (i * 100),
+          interestOutstanding: 4000 + (i * 80),
+          interestRate: 12.5,
+          processingFee: 1000,
+          tenureInMonths: 12,
+          totalInstallments: 12,
+          installmentsOutstanding: 10,
+          insuranceId: `INS${String(Math.ceil(i/20)).padStart(3, '0')}`,
+          insuranceCode: 'LIFE001',
+          disbursementDate: new Date(2024, 0, i % 28 + 1).toISOString().split('T')[0],
+          centerId: `CTR${String(Math.ceil(i/10)).padStart(3, '0')}`,
+          centerCode: `ANC${String(Math.ceil(i/10)).padStart(3, '0')}`,
+          centerName: `Center ${Math.ceil(i/10)}`,
+          foId: `FO${String(Math.ceil(i/20)).padStart(3, '0')}`,
+          foName: `Field Officer ${Math.ceil(i/20)}`,
+          branchId: `BR${String(Math.ceil(i/30)).padStart(3, '0')}`,
+          branchCode: `MBR${String(Math.ceil(i/30)).padStart(3, '0')}`,
+          branchName: `Branch ${Math.ceil(i/30)}`,
+          divisionId: `DIV${String(Math.ceil(i/50)).padStart(3, '0')}`,
+          divisionCode: `CDIV${String(Math.ceil(i/50)).padStart(3, '0')}`,
+          divisionName: `Division ${Math.ceil(i/50)}`,
+          centerGroupCode: `CG${String(Math.ceil(i/10)).padStart(3, '0')}`,
+          purpose: i % 3 === 0 ? 'Business' : i % 3 === 1 ? 'Agriculture' : 'Education',
+          subPurpose: i % 3 === 0 ? 'Small Business' : i % 3 === 1 ? 'Crop Loan' : 'Higher Education',
+          repaymentFrequency: 'Monthly',
+          fundSequenceNumber: `FSN${String(i).padStart(3, '0')}`,
+          allocationDate: new Date(2024, 0, (i % 28) + 1).toISOString().split('T')[0],
+          loanCreatedOn: new Date(2024, 0, (i % 28) + 1).toISOString().split('T')[0],
+          loanClosureDate: '',
+          neftDate: new Date(2024, 0, (i % 28) + 2).toISOString().split('T')[0],
+          paymentDoneFrom: 'Branch',
+          maturityDate: new Date(2025, 0, (i % 28) + 1).toISOString().split('T')[0],
+          insuranceFee: 500,
+          firstName: `First${i}`,
+          lastName: `Last${i}`,
+          reservationCategory: i % 4 === 0 ? 'General' : i % 4 === 1 ? 'OBC' : i % 4 === 2 ? 'SC' : 'ST',
+          gender: i % 2 === 0 ? 'Male' : 'Female',
+          caste: i % 4 === 0 ? 'General' : i % 4 === 1 ? 'OBC' : i % 4 === 2 ? 'SC' : 'ST',
+          dob: new Date(1980 + (i % 20), (i % 12), (i % 28) + 1).toISOString().split('T')[0],
+          age: 30 + (i % 20),
+          maritalStatus: i % 3 === 0 ? 'Single' : i % 3 === 1 ? 'Married' : 'Widowed',
+          totalIncome: 20000 + (i * 500),
+          totalExpense: 15000 + (i * 300),
+          religion: i % 4 === 0 ? 'Hindu' : i % 4 === 1 ? 'Muslim' : i % 4 === 2 ? 'Christian' : 'Sikh',
+          sourceOfIncome: i % 3 === 0 ? 'Business' : i % 3 === 1 ? 'Agriculture' : 'Salary',
+          annualIncome: (20000 + (i * 500)) * 12,
+          loanCycle: 1 + (i % 3),
+          aadhaarNumber: `${1234 + i}-${5678 + i}-${9012 + i}`,
+          loanStatus: i % 10 === 0 ? 'closed' : i % 20 === 0 ? 'written-off' : 'active',
+          productName: i % 2 === 0 ? 'Micro Finance Loan' : 'Group Loan',
+          voterCardNumber: `VOTER${String(i).padStart(6, '0')}`,
+          rationCardNumber: `RATION${String(i).padStart(6, '0')}`,
+          extLoanId: `EXT${String(i).padStart(3, '0')}`,
+          extLanNo: `LAN${String(i).padStart(3, '0')}`,
+          extCustId: `CUST${String(i).padStart(3, '0')}`,
+          bcPartnerId: `BCP${String(Math.ceil(i/20)).padStart(3, '0')}`,
+          centerDay: i % 7 === 0 ? 'Monday' : i % 7 === 1 ? 'Tuesday' : i % 7 === 2 ? 'Wednesday' : i % 7 === 3 ? 'Thursday' : i % 7 === 4 ? 'Friday' : i % 7 === 5 ? 'Saturday' : 'Sunday',
+          mobileNumber: `+91 ${9876543210 + i}`,
+          isDeathTagged: i % 50 === 0,
+          stateName: i % 5 === 0 ? 'Delhi' : i % 5 === 1 ? 'Maharashtra' : i % 5 === 2 ? 'Karnataka' : i % 5 === 3 ? 'Tamil Nadu' : 'Gujarat',
+          zoneId: `ZN${String(Math.ceil(i/40)).padStart(3, '0')}`,
+          zoneCode: `NZ${String(Math.ceil(i/40)).padStart(3, '0')}`,
+          zoneName: `Zone ${Math.ceil(i/40)}`,
+          villageId: `VIL${String(Math.ceil(i/15)).padStart(3, '0')}`,
+          villageCode: `VC${String(Math.ceil(i/15)).padStart(3, '0')}`,
+          villageName: `Village ${Math.ceil(i/15)}`,
+          kycId: i % 2 === 0 ? `${1234 + i}-${5678 + i}-${9012 + i}` : `VOTER${String(i).padStart(6, '0')}`,
+          kycType: i % 2 === 0 ? 'Aadhaar' : 'Voter ID',
+          netPayableAmount: 49500 + (i * 950),
+          altContactNumber: `+91 ${8765432100 + i}`,
+          parDays: i % 40 === 0 ? 30 : i % 60 === 0 ? 90 : 0,
+          principalArrears: i % 40 === 0 ? 5000 : i % 60 === 0 ? 10000 : 0,
+          interestArrears: i % 40 === 0 ? 500 : i % 60 === 0 ? 1000 : 0,
+          totalArrears: i % 40 === 0 ? 5500 : i % 60 === 0 ? 11000 : 0,
+          lastDueDate: new Date(2024, 1, (i % 28) + 1).toISOString().split('T')[0],
+          principalCollected: 5000 + (i * 100),
+          interestCollected: 1000 + (i * 20),
+          lastCollDate: new Date(2024, 1, (i % 28) + 1).toISOString().split('T')[0],
+          parDaysAnswer: i % 40 === 0 ? 30 : i % 60 === 0 ? 90 : 0,
+          lastCollAmount: 6000 + (i * 120),
+          parInstallmentDue: i % 40 === 0 ? 1 : i % 60 === 0 ? 3 : 0,
+          par30: i % 40 === 0,
+          par90: i % 60 === 0,
+          parAbove90: i % 100 === 0,
+          parStatus: i % 40 === 0 ? 'PAR 30' : i % 60 === 0 ? 'PAR 90' : i % 100 === 0 ? 'PAR 90+' : 'Regular',
+          nomineeName: `Nominee ${i}`,
+          coApplicantName: i % 3 === 0 ? `CoApplicant ${i}` : '',
+          qctAgent: `QCT${String(Math.ceil(i/25)).padStart(3, '0')}`,
+          qctAgentName: `QCT Agent ${Math.ceil(i/25)}`,
+          acmCode: `ACM${String(Math.ceil(i/30)).padStart(3, '0')}`,
+          acmName: `ACM ${Math.ceil(i/30)}`,
+          dcmCode: `DCM${String(Math.ceil(i/50)).padStart(3, '0')}`,
+          dcmName: `DCM ${Math.ceil(i/50)}`,
+          zmCode: `ZM${String(Math.ceil(i/70)).padStart(3, '0')}`,
+          zmName: `ZM ${Math.ceil(i/70)}`,
+          neftTransactionNumber: `NEFT${String(i).padStart(6, '0')}`,
+          disbursedBy: 'Manager User',
+          modeOfDisbursement: i % 2 === 0 ? 'NEFT' : 'Cash',
+          lastCollectionMode: i % 3 === 0 ? 'Cash' : i % 3 === 1 ? 'UPI' : 'Bank Transfer',
+          lastCollectionTransactionId: `COLL${String(i).padStart(6, '0')}`
+        });
+      }
+      
+      setRecords(sampleData);
+      setFilteredRecords(sampleData);
+      setTotalItems(sampleData.length);
+      setTotalPages(Math.ceil(sampleData.length / pageSize));
+      setLoading(false);
+    };
+    
+    generateSampleData();
+  }, []);
 
   const handleFilter = (filters: LoanSummaryFilterOptions) => {
     let filtered = records;
@@ -727,6 +642,9 @@ export const LoanSummary: React.FC = () => {
     }
 
     setFilteredRecords(filtered);
+    setTotalItems(filtered.length);
+    setTotalPages(Math.ceil(filtered.length / pageSize));
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   const handleDownload = () => {
@@ -750,13 +668,13 @@ export const LoanSummary: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300';
       case 'closed':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300';
       case 'written-off':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300';
     }
   };
 
@@ -802,34 +720,19 @@ export const LoanSummary: React.FC = () => {
       key: 'principalOutstanding',
       label: 'Principal Outstanding',
       sortable: true,
-      render: (value: number) => (
-        <div className="flex items-center space-x-1">
-          <DollarSign className="w-4 h-4 text-gray-400" />
-          <span>₹{value.toLocaleString()}</span>
-        </div>
-      )
+      render: (value: number) => `₹${value.toLocaleString()}`
     },
     {
       key: 'interestAmount',
       label: 'Interest Amount',
       sortable: true,
-      render: (value: number) => (
-        <div className="flex items-center space-x-1">
-          <DollarSign className="w-4 h-4 text-gray-400" />
-          <span>₹{value.toLocaleString()}</span>
-        </div>
-      )
+      render: (value: number) => `₹${value.toLocaleString()}`
     },
     {
       key: 'interestOutstanding',
       label: 'Interest Outstanding',
       sortable: true,
-      render: (value: number) => (
-        <div className="flex items-center space-x-1">
-          <DollarSign className="w-4 h-4 text-gray-400" />
-          <span>₹{value.toLocaleString()}</span>
-        </div>
-      )
+      render: (value: number) => `₹${value.toLocaleString()}`
     },
     {
       key: 'interestRate',
@@ -909,12 +812,6 @@ export const LoanSummary: React.FC = () => {
       key: 'foName',
       label: 'FO Name',
       sortable: true,
-      render: (value: string) => (
-        <div className="flex items-center space-x-1">
-          <User className="w-4 h-4 text-gray-400" />
-          <span>{value}</span>
-        </div>
-      )
     },
     {
       key: 'branchId',
@@ -1092,7 +989,7 @@ export const LoanSummary: React.FC = () => {
       label: 'Loan Cycle',
       sortable: true,
       render: (value: number) => (
-        <span className="inline-flex px-2 py-1 text-xs rounded-full font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+        <span className="inline-flex px-2 py-1 text-xs rounded-full font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">
           Cycle {value}
         </span>
       )
@@ -1392,7 +1289,7 @@ export const LoanSummary: React.FC = () => {
     },
     {
       key: 'disbursedBy',
-      label: 'Disbursed By',
+      label: 'Disbursed by',
       sortable: true,
     },
     {
@@ -1411,6 +1308,23 @@ export const LoanSummary: React.FC = () => {
       sortable: true,
     }
   ];
+
+  // Get paginated data
+  const getPaginatedData = () => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredRecords.slice(startIndex, endIndex);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setTotalPages(Math.ceil(filteredRecords.length / size));
+    setCurrentPage(1); // Reset to first page when changing page size
+  };
 
   if (loading) {
     return (
@@ -1432,14 +1346,14 @@ export const LoanSummary: React.FC = () => {
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg flex items-center space-x-2">
+        <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg flex items-center space-x-2">
           <CheckCircle className="w-5 h-5 flex-shrink-0" />
           <span>{success}</span>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg flex items-center space-x-2">
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg flex items-center space-x-2">
           <XCircle className="w-5 h-5 flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -1449,13 +1363,13 @@ export const LoanSummary: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <CreditCard className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Loans</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Active Loans</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                {records.length}
+                {records.filter(loan => loan.loanStatus === 'active').length}
               </p>
             </div>
           </div>
@@ -1463,13 +1377,13 @@ export const LoanSummary: React.FC = () => {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-              <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+              <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Principal</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Disbursed</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                ₹{records.reduce((sum, record) => sum + record.principalAmount, 0).toLocaleString()}
+                ₹{records.reduce((sum, loan) => sum + loan.principalAmount, 0).toLocaleString()}
               </p>
             </div>
           </div>
@@ -1477,13 +1391,13 @@ export const LoanSummary: React.FC = () => {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+            <div className="p-2 bg-yellow-100 dark:bg-yellow-900/50 rounded-lg">
               <DollarSign className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
             </div>
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Outstanding</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                ₹{records.reduce((sum, record) => sum + record.principalOutstanding + record.interestOutstanding, 0).toLocaleString()}
+                ₹{records.reduce((sum, loan) => sum + loan.principalOutstanding, 0).toLocaleString()}
               </p>
             </div>
           </div>
@@ -1491,13 +1405,13 @@ export const LoanSummary: React.FC = () => {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
-              <Clock className="w-5 h-5 text-red-600 dark:text-red-400" />
+            <div className="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg">
+              <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Arrears</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                ₹{records.reduce((sum, record) => sum + record.principalArrears + record.interestArrears, 0).toLocaleString()}
+                ₹{records.reduce((sum, loan) => sum + loan.principalArrears + loan.interestArrears, 0).toLocaleString()}
               </p>
             </div>
           </div>
@@ -1507,7 +1421,7 @@ export const LoanSummary: React.FC = () => {
       {/* Main Content */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Loan Summary</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -1537,7 +1451,7 @@ export const LoanSummary: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredRecords.map((record, index) => (
+              {getPaginatedData().map((record, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
@@ -1552,6 +1466,16 @@ export const LoanSummary: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
       </div>
     </div>
   );

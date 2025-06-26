@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Download, 
   Calendar, 
   Building, 
   User, 
-  CreditCard, 
+  CheckCircle, 
+  XCircle, 
   Filter, 
   ChevronDown,
+  CreditCard,
   DollarSign,
   Phone,
   Clock,
-  CheckCircle,
-  XCircle,
   FileText
 } from 'lucide-react';
+import { Pagination } from '../../../components/Common/Pagination';
 
 interface RepaymentDetailRecord {
+  id: string;
   loanId: string;
   loanCode: string;
   branchName: string;
@@ -65,6 +67,7 @@ interface RepaymentDetailRecord {
 }
 
 interface CenterDemandRecord {
+  id: string;
   branchCode: string;
   branchName: string;
   foId: string;
@@ -448,171 +451,135 @@ const CenterDemandFilterDropdown: React.FC<{
 export const RepaymentDetails: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'repaymentDetail' | 'centerDemand'>('repaymentDetail');
   
-  const [repaymentRecords, setRepaymentRecords] = useState<RepaymentDetailRecord[]>([
-    {
-      loanId: '1',
-      loanCode: 'LN001',
-      branchName: 'Main Branch',
-      centerCode: 'ANC001',
-      centerName: 'Anand Nagar Center',
-      foId: 'FO001',
-      foName: 'Amit Kumar',
-      clientId: 'CL001',
-      clientName: 'Priya Sharma',
-      mobileNumber: '+91 9876543210',
-      husbandNumber: '+91 9876543211',
-      coApplicantNumber: '',
-      productCode: 'MF001',
-      principalAmount: 50000,
-      interestAmount: 5000,
-      principalOutstanding: 45000,
-      interestOutstanding: 4000,
-      totalOutstanding: 49000,
-      totalInstallments: 12,
-      installmentsOutstanding: 10,
-      centerDay: 'Monday',
-      centerTime: '10:00',
-      contactPersonName: 'Rajesh Sharma',
-      divisionName: 'Central Division',
-      centerGroupCode: 'CG001',
-      closureDate: '',
-      loanCycle: 1,
-      emiSequence: 3,
-      ddPrincipalDue: 4167,
-      ddInterestDue: 417,
-      ddTotalAmountDue: 4584,
-      ddPrincipalCollected: 4167,
-      ddInterestCollected: 417,
-      ddTotalAmountCollected: 4584,
-      ddPrincipalOutstanding: 0,
-      ddCenterMeetingId: 'CM001',
-      collectionDate: '2024-02-20',
-      meetingDate: '2024-02-20',
-      villageName: 'Rampur',
-      principalArrear: 0,
-      interestArrear: 0,
-      totalArrear: 0,
-      centerLeadName: 'Mohan Singh',
-      loanStatus: 'active',
-      insertedOn: '2024-01-18'
-    },
-    {
-      loanId: '2',
-      loanCode: 'LN002',
-      branchName: 'North Branch',
-      centerCode: 'GCC002',
-      centerName: 'Gandhi Colony Center',
-      foId: 'FO002',
-      foName: 'Neha Gupta',
-      clientId: 'CL002',
-      clientName: 'Rajesh Kumar',
-      mobileNumber: '+91 9876543211',
-      husbandNumber: '',
-      coApplicantNumber: '+91 9876543212',
-      productCode: 'GL001',
-      principalAmount: 75000,
-      interestAmount: 7500,
-      principalOutstanding: 70000,
-      interestOutstanding: 7000,
-      totalOutstanding: 77000,
-      totalInstallments: 18,
-      installmentsOutstanding: 17,
-      centerDay: 'Wednesday',
-      centerTime: '14:00',
-      contactPersonName: 'Sunita Devi',
-      divisionName: 'North Division',
-      centerGroupCode: 'CG002',
-      closureDate: '',
-      loanCycle: 2,
-      emiSequence: 2,
-      ddPrincipalDue: 4167,
-      ddInterestDue: 417,
-      ddTotalAmountDue: 4584,
-      ddPrincipalCollected: 4167,
-      ddInterestCollected: 417,
-      ddTotalAmountCollected: 4584,
-      ddPrincipalOutstanding: 0,
-      ddCenterMeetingId: 'CM002',
-      collectionDate: '2024-02-18',
-      meetingDate: '2024-02-18',
-      villageName: 'Shyampur',
-      principalArrear: 0,
-      interestArrear: 0,
-      totalArrear: 0,
-      centerLeadName: 'Sanjay Kumar',
-      loanStatus: 'active',
-      insertedOn: '2024-01-16'
-    }
-  ]);
+  const [repaymentRecords, setRepaymentRecords] = useState<RepaymentDetailRecord[]>([]);
+  const [centerDemandRecords, setCenterDemandRecords] = useState<CenterDemandRecord[]>([]);
   
-  const [centerDemandRecords, setCenterDemandRecords] = useState<CenterDemandRecord[]>([
-    {
-      branchCode: 'MBR001',
-      branchName: 'Main Branch',
-      foId: 'FO001',
-      foName: 'Amit Kumar',
-      centerId: 'CTR001',
-      centerCode: 'ANC001',
-      centerName: 'Anand Nagar Center',
-      centerGroupCode: 'CG001',
-      clientId: 'CL001',
-      loanCode: 'LN001',
-      clientName: 'Priya Sharma',
-      mobileNumber: '+91 9876543210',
-      husbandName: 'Rahul Sharma',
-      disbursementDate: '2024-01-20',
-      principalAmount: 50000,
-      loanCycle: 1,
-      totalInstallments: 12,
-      installmentsOutstanding: 10,
-      principalDue: 4167,
-      interestDue: 417,
-      penalDue: 0,
-      totalDue: 4584,
-      principalArrear: 0,
-      interestArrear: 0,
-      totalArrear: 0,
-      parDays: 0,
-      collectionAmount: 4584,
-      extendedPeriodInterest: 0
-    },
-    {
-      branchCode: 'NBR002',
-      branchName: 'North Branch',
-      foId: 'FO002',
-      foName: 'Neha Gupta',
-      centerId: 'CTR002',
-      centerCode: 'GCC002',
-      centerName: 'Gandhi Colony Center',
-      centerGroupCode: 'CG002',
-      clientId: 'CL002',
-      loanCode: 'LN002',
-      clientName: 'Rajesh Kumar',
-      mobileNumber: '+91 9876543211',
-      husbandName: '',
-      disbursementDate: '2024-01-18',
-      principalAmount: 75000,
-      loanCycle: 2,
-      totalInstallments: 18,
-      installmentsOutstanding: 17,
-      principalDue: 4167,
-      interestDue: 417,
-      penalDue: 0,
-      totalDue: 4584,
-      principalArrear: 0,
-      interestArrear: 0,
-      totalArrear: 0,
-      parDays: 0,
-      collectionAmount: 4584,
-      extendedPeriodInterest: 0
-    }
-  ]);
+  const [filteredRepaymentRecords, setFilteredRepaymentRecords] = useState<RepaymentDetailRecord[]>([]);
+  const [filteredCenterDemandRecords, setFilteredCenterDemandRecords] = useState<CenterDemandRecord[]>([]);
   
-  const [filteredRepaymentRecords, setFilteredRepaymentRecords] = useState<RepaymentDetailRecord[]>(repaymentRecords);
-  const [filteredCenterDemandRecords, setFilteredCenterDemandRecords] = useState<CenterDemandRecord[]>(centerDemandRecords);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+  
+  // Pagination state for repayment details
+  const [repaymentCurrentPage, setRepaymentCurrentPage] = useState(1);
+  const [repaymentPageSize, setRepaymentPageSize] = useState(10);
+  const [repaymentTotalItems, setRepaymentTotalItems] = useState(0);
+  const [repaymentTotalPages, setRepaymentTotalPages] = useState(0);
+  
+  // Pagination state for center demand
+  const [demandCurrentPage, setDemandCurrentPage] = useState(1);
+  const [demandPageSize, setDemandPageSize] = useState(10);
+  const [demandTotalItems, setDemandTotalItems] = useState(0);
+  const [demandTotalPages, setDemandTotalPages] = useState(0);
+
+  // Generate sample data
+  useEffect(() => {
+    const generateSampleData = () => {
+      // Generate repayment records
+      const repaymentData: RepaymentDetailRecord[] = [];
+      for (let i = 1; i <= 50; i++) {
+        repaymentData.push({
+          id: `${i}`,
+          loanId: `${i}`,
+          loanCode: `LN${String(i).padStart(3, '0')}`,
+          branchName: i % 3 === 0 ? 'Main Branch' : i % 3 === 1 ? 'North Branch' : 'South Branch',
+          centerCode: `CTR${String(Math.ceil(i/5)).padStart(3, '0')}`,
+          centerName: `Center ${Math.ceil(i/5)}`,
+          foId: `FO${String(Math.ceil(i/10)).padStart(3, '0')}`,
+          foName: `Field Officer ${Math.ceil(i/10)}`,
+          clientId: `CL${String(i).padStart(3, '0')}`,
+          clientName: `Client ${i}`,
+          mobileNumber: `+91 ${9876543210 + i}`,
+          husbandNumber: i % 2 === 0 ? `+91 ${8765432100 + i}` : '',
+          coApplicantNumber: i % 3 === 0 ? `+91 ${7654321000 + i}` : '',
+          productCode: i % 2 === 0 ? 'MF001' : 'GL001',
+          principalAmount: 50000 + (i * 1000),
+          interestAmount: 5000 + (i * 100),
+          principalOutstanding: 45000 + (i * 800),
+          interestOutstanding: 4000 + (i * 80),
+          totalOutstanding: 49000 + (i * 880),
+          totalInstallments: 12,
+          installmentsOutstanding: 10,
+          centerDay: i % 7 === 0 ? 'Monday' : i % 7 === 1 ? 'Tuesday' : i % 7 === 2 ? 'Wednesday' : i % 7 === 3 ? 'Thursday' : i % 7 === 4 ? 'Friday' : i % 7 === 5 ? 'Saturday' : 'Sunday',
+          centerTime: `${10 + (i % 8)}:00`,
+          contactPersonName: `Contact Person ${i}`,
+          divisionName: i % 3 === 0 ? 'Central Division' : i % 3 === 1 ? 'North Division' : 'South Division',
+          centerGroupCode: `CG${String(Math.ceil(i/5)).padStart(3, '0')}`,
+          closureDate: '',
+          loanCycle: 1 + (i % 3),
+          emiSequence: 3,
+          ddPrincipalDue: 4167 + (i * 83),
+          ddInterestDue: 417 + (i * 8),
+          ddTotalAmountDue: 4584 + (i * 91),
+          ddPrincipalCollected: 4167 + (i * 83),
+          ddInterestCollected: 417 + (i * 8),
+          ddTotalAmountCollected: 4584 + (i * 91),
+          ddPrincipalOutstanding: 0,
+          ddCenterMeetingId: `CM${String(Math.ceil(i/5)).padStart(3, '0')}`,
+          collectionDate: new Date(2024, 1, (i % 28) + 1).toISOString().split('T')[0],
+          meetingDate: new Date(2024, 1, (i % 28) + 1).toISOString().split('T')[0],
+          villageName: `Village ${Math.ceil(i/7)}`,
+          principalArrear: 0,
+          interestArrear: 0,
+          totalArrear: 0,
+          centerLeadName: `Center Lead ${Math.ceil(i/5)}`,
+          loanStatus: 'active',
+          insertedOn: new Date(2024, 0, (i % 28) + 1).toISOString().split('T')[0]
+        });
+      }
+      
+      // Generate center demand records
+      const centerDemandData: CenterDemandRecord[] = [];
+      for (let i = 1; i <= 50; i++) {
+        centerDemandData.push({
+          id: `${i}`,
+          branchCode: i % 3 === 0 ? 'MBR001' : i % 3 === 1 ? 'NBR002' : 'SBR003',
+          branchName: i % 3 === 0 ? 'Main Branch' : i % 3 === 1 ? 'North Branch' : 'South Branch',
+          foId: `FO${String(Math.ceil(i/10)).padStart(3, '0')}`,
+          foName: `Field Officer ${Math.ceil(i/10)}`,
+          centerId: `CTR${String(Math.ceil(i/5)).padStart(3, '0')}`,
+          centerCode: `CC${String(Math.ceil(i/5)).padStart(3, '0')}`,
+          centerName: `Center ${Math.ceil(i/5)}`,
+          centerGroupCode: `CG${String(Math.ceil(i/5)).padStart(3, '0')}`,
+          clientId: `CL${String(i).padStart(3, '0')}`,
+          loanCode: `LN${String(i).padStart(3, '0')}`,
+          clientName: `Client ${i}`,
+          mobileNumber: `+91 ${9876543210 + i}`,
+          husbandName: i % 2 === 0 ? `Husband ${i}` : '',
+          disbursementDate: new Date(2024, 0, (i % 28) + 1).toISOString().split('T')[0],
+          principalAmount: 50000 + (i * 1000),
+          loanCycle: 1 + (i % 3),
+          totalInstallments: 12,
+          installmentsOutstanding: 10,
+          principalDue: 4167 + (i * 83),
+          interestDue: 417 + (i * 8),
+          penalDue: 0,
+          totalDue: 4584 + (i * 91),
+          principalArrear: 0,
+          interestArrear: 0,
+          totalArrear: 0,
+          parDays: 0,
+          collectionAmount: 4584 + (i * 91),
+          extendedPeriodInterest: 0
+        });
+      }
+      
+      setRepaymentRecords(repaymentData);
+      setFilteredRepaymentRecords(repaymentData);
+      setRepaymentTotalItems(repaymentData.length);
+      setRepaymentTotalPages(Math.ceil(repaymentData.length / repaymentPageSize));
+      
+      setCenterDemandRecords(centerDemandData);
+      setFilteredCenterDemandRecords(centerDemandData);
+      setDemandTotalItems(centerDemandData.length);
+      setDemandTotalPages(Math.ceil(centerDemandData.length / demandPageSize));
+      
+      setLoading(false);
+    };
+    
+    generateSampleData();
+  }, []);
 
   const handleRepaymentFilter = (filters: RepaymentDetailFilterOptions) => {
     let filtered = repaymentRecords;
@@ -647,6 +614,9 @@ export const RepaymentDetails: React.FC = () => {
     }
 
     setFilteredRepaymentRecords(filtered);
+    setRepaymentTotalItems(filtered.length);
+    setRepaymentTotalPages(Math.ceil(filtered.length / repaymentPageSize));
+    setRepaymentCurrentPage(1); // Reset to first page
   };
 
   const handleCenterDemandFilter = (filters: CenterDemandFilterOptions) => {
@@ -666,6 +636,9 @@ export const RepaymentDetails: React.FC = () => {
     // In a real application, showMature would filter mature loans
 
     setFilteredCenterDemandRecords(filtered);
+    setDemandTotalItems(filtered.length);
+    setDemandTotalPages(Math.ceil(filtered.length / demandPageSize));
+    setDemandCurrentPage(1); // Reset to first page
   };
 
   const handleRepaymentDownload = () => {
@@ -694,13 +667,13 @@ export const RepaymentDetails: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300';
       case 'closed':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300';
       case 'written-off':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300';
     }
   };
 
@@ -887,7 +860,7 @@ export const RepaymentDetails: React.FC = () => {
       label: 'Loan Cycle',
       sortable: true,
       render: (value: number) => (
-        <span className="inline-flex px-2 py-1 text-xs rounded-full font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+        <span className="inline-flex px-2 py-1 text-xs rounded-full font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">
           Cycle {value}
         </span>
       )
@@ -1131,7 +1104,7 @@ export const RepaymentDetails: React.FC = () => {
       label: 'Loan Cycle',
       sortable: true,
       render: (value: number) => (
-        <span className="inline-flex px-2 py-1 text-xs rounded-full font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+        <span className="inline-flex px-2 py-1 text-xs rounded-full font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">
           Cycle {value}
         </span>
       )
@@ -1207,6 +1180,40 @@ export const RepaymentDetails: React.FC = () => {
     }
   ];
 
+  // Get paginated data for repayment details
+  const getPaginatedRepaymentData = () => {
+    const startIndex = (repaymentCurrentPage - 1) * repaymentPageSize;
+    const endIndex = startIndex + repaymentPageSize;
+    return filteredRepaymentRecords.slice(startIndex, endIndex);
+  };
+
+  // Get paginated data for center demand
+  const getPaginatedDemandData = () => {
+    const startIndex = (demandCurrentPage - 1) * demandPageSize;
+    const endIndex = startIndex + demandPageSize;
+    return filteredCenterDemandRecords.slice(startIndex, endIndex);
+  };
+
+  const handleRepaymentPageChange = (page: number) => {
+    setRepaymentCurrentPage(page);
+  };
+
+  const handleRepaymentPageSizeChange = (size: number) => {
+    setRepaymentPageSize(size);
+    setRepaymentTotalPages(Math.ceil(filteredRepaymentRecords.length / size));
+    setRepaymentCurrentPage(1); // Reset to first page
+  };
+
+  const handleDemandPageChange = (page: number) => {
+    setDemandCurrentPage(page);
+  };
+
+  const handleDemandPageSizeChange = (size: number) => {
+    setDemandPageSize(size);
+    setDemandTotalPages(Math.ceil(filteredCenterDemandRecords.length / size));
+    setDemandCurrentPage(1); // Reset to first page
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -1227,14 +1234,14 @@ export const RepaymentDetails: React.FC = () => {
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg flex items-center space-x-2">
+        <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg flex items-center space-x-2">
           <CheckCircle className="w-5 h-5 flex-shrink-0" />
           <span>{success}</span>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg flex items-center space-x-2">
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg flex items-center space-x-2">
           <XCircle className="w-5 h-5 flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -1271,7 +1278,7 @@ export const RepaymentDetails: React.FC = () => {
         {activeTab === 'repaymentDetail' && (
           <>
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Repayment Detail Report</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -1301,7 +1308,7 @@ export const RepaymentDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredRepaymentRecords.map((record, index) => (
+                  {getPaginatedRepaymentData().map((record, index) => (
                     <tr
                       key={index}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
@@ -1316,6 +1323,16 @@ export const RepaymentDetails: React.FC = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={repaymentCurrentPage}
+              totalPages={repaymentTotalPages}
+              pageSize={repaymentPageSize}
+              totalItems={repaymentTotalItems}
+              onPageChange={handleRepaymentPageChange}
+              onPageSizeChange={handleRepaymentPageSizeChange}
+            />
           </>
         )}
 
@@ -1323,7 +1340,7 @@ export const RepaymentDetails: React.FC = () => {
         {activeTab === 'centerDemand' && (
           <>
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Center Demand Report</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -1353,7 +1370,7 @@ export const RepaymentDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredCenterDemandRecords.map((record, index) => (
+                  {getPaginatedDemandData().map((record, index) => (
                     <tr
                       key={index}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
@@ -1368,6 +1385,16 @@ export const RepaymentDetails: React.FC = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={demandCurrentPage}
+              totalPages={demandTotalPages}
+              pageSize={demandPageSize}
+              totalItems={demandTotalItems}
+              onPageChange={handleDemandPageChange}
+              onPageSizeChange={handleDemandPageSizeChange}
+            />
           </>
         )}
       </div>

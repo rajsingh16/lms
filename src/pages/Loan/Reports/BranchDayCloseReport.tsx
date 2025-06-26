@@ -1,19 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
+  Search, 
   Download, 
   Calendar, 
-  Building, 
-  DollarSign, 
+  Clock, 
   CheckCircle, 
   XCircle, 
   Filter, 
   ChevronDown,
+  Building,
   User,
+  DollarSign,
   ToggleLeft,
   ToggleRight
 } from 'lucide-react';
+import { Pagination } from '../../../components/Common/Pagination';
 
 interface BranchDayCloseRecord {
+  id: string;
   branchCode: string;
   branchName: string;
   branchId: string;
@@ -160,53 +164,100 @@ const BranchDayCloseFilterDropdown: React.FC<{
 };
 
 export const BranchDayCloseReport: React.FC = () => {
-  const [records, setRecords] = useState<BranchDayCloseRecord[]>([
-    {
-      branchCode: 'MBR001',
-      branchName: 'Main Branch',
-      branchId: 'BR001',
-      branchCloseDate: '2024-01-20',
-      branchBalance: 125000,
-      cashBookBalance: 125000,
-      cashDifference: 0,
-      remarks: 'All balanced',
-      denomination: '2000x10, 500x150, 200x50, 100x100, 50x20, 20x50, 10x100, Coins: 500',
-      insertedBy: 'Admin User',
-      insertedOn: '2024-01-20'
-    },
-    {
-      branchCode: 'NBR002',
-      branchName: 'North Branch',
-      branchId: 'BR002',
-      branchCloseDate: '2024-01-20',
-      branchBalance: 85000,
-      cashBookBalance: 85200,
-      cashDifference: -200,
-      remarks: 'Minor discrepancy, to be investigated',
-      denomination: '2000x5, 500x100, 200x50, 100x100, 50x20, 20x50, 10x50, Coins: 200',
-      insertedBy: 'Manager User',
-      insertedOn: '2024-01-20'
-    },
-    {
-      branchCode: 'SBR003',
-      branchName: 'South Branch',
-      branchId: 'BR003',
-      branchCloseDate: '2024-01-20',
-      branchBalance: 95000,
-      cashBookBalance: 94800,
-      cashDifference: 200,
-      remarks: 'Minor excess, to be adjusted',
-      denomination: '2000x10, 500x90, 200x50, 100x100, 50x20, 20x50, 10x80, Coins: 300',
-      insertedBy: 'Manager User',
-      insertedOn: '2024-01-20'
-    }
-  ]);
-  
-  const [filteredRecords, setFilteredRecords] = useState<BranchDayCloseRecord[]>(records);
-  const [loading, setLoading] = useState(false);
+  const [records, setRecords] = useState<BranchDayCloseRecord[]>([]);
+  const [filteredRecords, setFilteredRecords] = useState<BranchDayCloseRecord[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const [showSummary, setShowSummary] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  // Generate sample data
+  useEffect(() => {
+    const generateSampleData = () => {
+      const sampleData: BranchDayCloseRecord[] = [];
+      
+      for (let i = 1; i <= 50; i++) {
+        const branchIndex = i % 5;
+        const branchNames = ['Main Branch', 'North Branch', 'South Branch', 'East Branch', 'West Branch'];
+        const branchCodes = ['MBR001', 'NBR002', 'SBR003', 'EBR004', 'WBR005'];
+        const branchIds = ['BR001', 'BR002', 'BR003', 'BR004', 'BR005'];
+        
+        // Calculate a random balance between 50,000 and 200,000
+        const baseBalance = 50000 + (Math.floor(Math.random() * 150) * 1000);
+        
+        // Randomly decide if there's a cash difference (10% chance)
+        const hasDifference = Math.random() < 0.1;
+        const differenceAmount = hasDifference ? (Math.random() < 0.5 ? 1 : -1) * Math.floor(Math.random() * 500) : 0;
+        
+        const branchBalance = baseBalance;
+        const cashBookBalance = baseBalance + differenceAmount;
+        
+        // Generate a random date in January 2024
+        const day = Math.floor(Math.random() * 28) + 1;
+        const date = new Date(2024, 0, day);
+        
+        sampleData.push({
+          id: `${i}`,
+          branchCode: branchCodes[branchIndex],
+          branchName: branchNames[branchIndex],
+          branchId: branchIds[branchIndex],
+          branchCloseDate: date.toISOString().split('T')[0],
+          branchBalance,
+          cashBookBalance,
+          cashDifference: differenceAmount,
+          remarks: differenceAmount === 0 
+            ? 'All balanced' 
+            : differenceAmount > 0 
+              ? 'Minor excess, to be adjusted' 
+              : 'Minor discrepancy, to be investigated',
+          denomination: generateRandomDenomination(branchBalance),
+          insertedBy: i % 2 === 0 ? 'Admin User' : 'Manager User',
+          insertedOn: date.toISOString().split('T')[0]
+        });
+      }
+      
+      setRecords(sampleData);
+      setFilteredRecords(sampleData);
+      setTotalItems(sampleData.length);
+      setTotalPages(Math.ceil(sampleData.length / pageSize));
+      setLoading(false);
+    };
+    
+    // Helper function to generate a random denomination string
+    const generateRandomDenomination = (total: number) => {
+      const denominations = [2000, 500, 200, 100, 50, 20, 10];
+      let remaining = total;
+      const counts: Record<number, number> = {};
+      
+      // Distribute the total amount across denominations
+      for (const denom of denominations) {
+        if (remaining <= 0) break;
+        
+        // Calculate a random count for this denomination
+        const maxCount = Math.floor(remaining / denom);
+        const count = Math.floor(Math.random() * Math.min(maxCount, 100)) + 1;
+        
+        counts[denom] = count;
+        remaining -= denom * count;
+      }
+      
+      // Add some coins for the remainder
+      counts['Coins'] = remaining;
+      
+      // Format the denomination string
+      return Object.entries(counts)
+        .map(([denom, count]) => denom === 'Coins' ? `Coins: ${count}` : `${denom}x${count}`)
+        .join(', ');
+    };
+    
+    generateSampleData();
+  }, []);
 
   const handleFilter = (filters: BranchDayCloseFilterOptions) => {
     let filtered = records;
@@ -226,11 +277,31 @@ export const BranchDayCloseReport: React.FC = () => {
     }
 
     setFilteredRecords(filtered);
+    setTotalItems(filtered.length);
+    setTotalPages(Math.ceil(filtered.length / pageSize));
+    setCurrentPage(1); // Reset to first page
   };
 
   const handleDownload = () => {
     // In a real application, this would generate and download a CSV or Excel file
     alert('Download functionality will be implemented');
+  };
+
+  // Get paginated data
+  const getPaginatedData = () => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredRecords.slice(startIndex, endIndex);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setTotalPages(Math.ceil(filteredRecords.length / size));
+    setCurrentPage(1); // Reset to first page
   };
 
   const columns = [
@@ -239,7 +310,7 @@ export const BranchDayCloseReport: React.FC = () => {
       label: 'Branch Code',
       sortable: true,
       render: (value: string) => (
-        <span className="font-mono">{value}</span>
+        <span className="font-mono font-medium">{value}</span>
       )
     },
     {
@@ -249,7 +320,7 @@ export const BranchDayCloseReport: React.FC = () => {
       render: (value: string) => (
         <div className="flex items-center space-x-1">
           <Building className="w-4 h-4 text-gray-400" />
-          <span className="font-medium">{value}</span>
+          <span>{value}</span>
         </div>
       )
     },
@@ -360,14 +431,14 @@ export const BranchDayCloseReport: React.FC = () => {
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg flex items-center space-x-2">
+        <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg flex items-center space-x-2">
           <CheckCircle className="w-5 h-5 flex-shrink-0" />
           <span>{success}</span>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg flex items-center space-x-2">
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg flex items-center space-x-2">
           <XCircle className="w-5 h-5 flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -433,7 +504,7 @@ export const BranchDayCloseReport: React.FC = () => {
       {/* Main Content */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center space-x-4">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Branch Day Close Records</h2>
               <button
@@ -482,7 +553,7 @@ export const BranchDayCloseReport: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredRecords.map((record, index) => (
+              {getPaginatedData().map((record, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
@@ -497,6 +568,16 @@ export const BranchDayCloseReport: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
       </div>
     </div>
   );
