@@ -7,7 +7,7 @@ import { DataTable } from '../../../components/Common/DataTable';
 import { Center, CenterFormData, CenterFilterOptions } from '../../../types/center';
 import { useAuth } from '../../../hooks/useAuth';
 import { centerService } from '../../../services/centerService';
-import { db } from '../../../lib/supabase';
+import { db, supabase } from '../../../lib/supabase';
 import { 
   Building, 
   Users, 
