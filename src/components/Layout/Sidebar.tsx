@@ -197,7 +197,7 @@ const menuItems: MenuItem[] = [
     icon: <Handshake className="w-5 h-5" />,
     roles: ['admin', 'manager'],
     children: [
-      { id: 'external-sanction', label: 'External Sanction', icon: <div className="w-2 h-2 bg-blue-500 rounded-full"></div>, path: '/business-partner/external-sanction', roles: ['admin', 'manager'] },
+      { id: 'external-sanction', label: 'External Sanction', icon: <div className="w-2 h-2 bg-blue-500 rounded-full"></div>, path: '/business-partner/external-sanction', roles: [\'admin', 'manager'] },
     ]
   }
 ];
