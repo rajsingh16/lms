@@ -8,6 +8,7 @@ import { LoginPage } from './components/Auth/LoginPage';
 import { RegisterPage } from './components/Auth/RegisterPage';
 import { Dashboard } from './pages/Dashboard';
 import { Areas } from './pages/Loan/Master/Areas';
+import { Centers } from './pages/Loan/Master/Centers';
 import { Villages } from './pages/Loan/Master/Villages';
 import { Clients } from './pages/Loan/Master/Clients';
 import { Products } from './pages/Loan/Master/Products';
@@ -81,6 +82,7 @@ function AppRoutes() {
         
         {/* Loan Module Routes */}
         <Route path="loan/master/areas" element={<Areas />} />
+        <Route path="loan/master/centers" element={<Centers />} />
         <Route path="loan/master/villages" element={<Villages />} />
         <Route path="loan/master/clients" element={<Clients />} />
         <Route path="loan/master/products" element={<Products />} />
