@@ -113,29 +113,33 @@ export const useAuthState = () => {
   };
 
   useEffect(() => {
-    // Check current session
-    auth.getCurrentUser().then(({ user, error }) => {
-      if (error) {
-        // Only log as error if it's not the expected "Auth session missing!" message
-        if (error.message !== 'Auth session missing!') {
-          console.error('Error getting current user:', error);
+    // Initialize with loading state
+    setAuthState(prev => ({ ...prev, loading: true }));
+    
+    // First check if we have a session
+    const checkSession = async () => {
+      try {
+        // Get the current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Error getting session:', sessionError);
+          clearAuthState();
+          return;
         }
+        
+        if (session?.user) {
+          await loadUserProfile(session.user);
+        } else {
+          clearAuthState();
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
         clearAuthState();
-        return;
       }
-      
-      if (user) {
-        loadUserProfile(user);
-      } else {
-        clearAuthState();
-      }
-    }).catch((error) => {
-      // Only log as error if it's not the expected "Auth session missing!" message
-      if (error.message !== 'Auth session missing!') {
-        console.error('Error in getCurrentUser:', error);
-      }
-      clearAuthState();
-    });
+    };
+    
+    checkSession();
 
     // Listen for auth changes
     const { data: { subscription } } = auth.onAuthStateChange(async (event, session) => {
@@ -218,26 +222,24 @@ export const useAuthState = () => {
 
   const refreshUser = async (): Promise<void> => {
     try {
-      const { user, error } = await auth.getCurrentUser();
-      if (error) {
-        // Only log as error if it's not the expected "Auth session missing!" message
-        if (error.message !== 'Auth session missing!') {
-          console.error('Error refreshing user:', error);
-        }
+      setAuthState(prev => ({ ...prev, loading: true }));
+      
+      // Get the current session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('Error refreshing session:', sessionError);
         clearAuthState();
         return;
       }
       
-      if (user) {
-        await loadUserProfile(user);
+      if (session?.user) {
+        await loadUserProfile(session.user);
       } else {
         clearAuthState();
       }
     } catch (error) {
-      // Only log as error if it's not the expected "Auth session missing!" message
-      if (error.message !== 'Auth session missing!') {
-        console.error('Error in refreshUser:', error);
-      }
+      console.error('Error in refreshUser:', error);
       clearAuthState();
     }
   };

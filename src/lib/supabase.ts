@@ -63,16 +63,6 @@ export const auth = {
     }
   },
 
-  getCurrentUser: async () => {
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      return { user, error };
-    } catch (error) {
-      console.error('Get current user error:', error);
-      return { user: null, error: { message: 'Network error getting user.' } };
-    }
-  },
-
   onAuthStateChange: (callback: (event: string, session: any) => void) => {
     return supabase.auth.onAuthStateChange(callback);
   }
