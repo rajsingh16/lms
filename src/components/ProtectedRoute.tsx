@@ -9,8 +9,7 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { auth } = useAuth();
 
-  // Show loading state only if auth is not yet initialized
-  if (!auth.authInitialized || auth.loading) {
+  if (auth.loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center justify-center space-y-4">

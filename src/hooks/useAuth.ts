@@ -10,7 +10,6 @@ interface AuthUser extends UserProfile {
 interface AuthState {
   user: AuthUser | null;
   isAuthenticated: boolean;
-  authInitialized: boolean;
   loading: boolean;
   userPermissions: string[];
 }
@@ -51,7 +50,6 @@ export const useAuthState = () => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     isAuthenticated: false,
-    authInitialized: false,
     loading: true,
     userPermissions: [],
   });
@@ -60,7 +58,6 @@ export const useAuthState = () => {
     setAuthState({
       user: null,
       isAuthenticated: false,
-      authInitialized: true,
       loading: false,
       userPermissions: [],
     });
@@ -81,9 +78,8 @@ export const useAuthState = () => {
         };
 
         setAuthState({
-          role: 'viewer',
+          user: authUser,
           isAuthenticated: true,
-          authInitialized: true,
           loading: false,
           userPermissions: permissionStrings,
         });
@@ -119,35 +115,30 @@ export const useAuthState = () => {
   useEffect(() => {
     // Initialize with loading state
     setAuthState(prev => ({ ...prev, loading: true }));
-
+    
     // First check if we have a session
     const checkSession = async () => {
       try {
         // Get the current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
+        
         if (sessionError) {
           console.error('Error getting session:', sessionError);
           clearAuthState();
           return;
         }
-
+        
         if (session?.user) {
           await loadUserProfile(session.user);
         } else {
-          // Still mark as initialized even if no session
-          setAuthState(prev => ({ 
-            ...prev, 
-            authInitialized: true, 
-            loading: false 
-          }));
+          clearAuthState();
         }
       } catch (error) {
         console.error('Error checking session:', error);
         clearAuthState();
       }
     };
-
+    
     checkSession();
 
     // Listen for auth changes
@@ -204,7 +195,6 @@ export const useAuthState = () => {
         last_name: userData.lastName,
         role: userData.role,
         branch_id: userData.branchId,
-        authInitialized: true,
         phone: userData.phone,
         employee_id: userData.employeeId,
       });
