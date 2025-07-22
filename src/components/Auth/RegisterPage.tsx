@@ -30,12 +30,16 @@ export const RegisterPage: React.FC = () => {
 
   const roles = [
     { value: 'admin', label: 'Administrator' },
-    { value: 'manager', label: 'Manager' },
-    { value: 'finance_officer', label: 'Finance Officer' },
-    { value: 'loan_officer', label: 'Loan Officer' },
-    { value: 'field_officer', label: 'Field Officer' },
-    { value: 'viewer', label: 'Viewer' },
-    { value: 'editor', label: 'Editor' },
+    { value: 'external_sanction', label: 'External Sanction' },
+    { value: 'mis', label: 'MIS' },
+    { value: 'receipt_payment', label: 'Receipt Payment' },
+    { value: 'role_bm', label: 'Branch Manager' },
+    { value: 'role_fo', label: 'Field Officer' },
+    { value: 'role_accountant', label: 'Accountant' },
+    { value: 'role_auditor', label: 'Auditor' },
+    { value: 'role_hr', label: 'Human Resources' },
+    { value: 'role_tele_caller', label: 'Tele Caller' },
+    // Add more commonly used roles here
   ];
 
   useEffect(() => {

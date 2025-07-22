@@ -1,13 +1,42 @@
 export interface Database {
   public: {
     Tables: {
+      roles: {
+        Row: {
+          id: string;
+          role_name: string;
+          role_code: string;
+          description: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          role_name: string;
+          role_code: string;
+          description?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          role_name?: string;
+          role_code?: string;
+          description?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       user_profiles: {
         Row: {
           id: string;
           username: string;
           first_name: string;
           last_name: string;
-          role: 'admin' | 'manager' | 'finance_officer' | 'loan_officer' | 'field_officer' | 'viewer' | 'editor';
+          role: string; // Updated to support any role from roles table
           branch_id: string | null;
           status: 'active' | 'inactive' | 'suspended';
           phone: string | null;
@@ -20,7 +49,7 @@ export interface Database {
           username: string;
           first_name: string;
           last_name: string;
-          role?: 'admin' | 'manager' | 'finance_officer' | 'loan_officer' | 'field_officer' | 'viewer' | 'editor';
+          role?: string;
           branch_id?: string | null;
           status?: 'active' | 'inactive' | 'suspended';
           phone?: string | null;
@@ -33,7 +62,7 @@ export interface Database {
           username?: string;
           first_name?: string;
           last_name?: string;
-          role?: 'admin' | 'manager' | 'finance_officer' | 'loan_officer' | 'field_officer' | 'viewer' | 'editor';
+          role?: string;
           branch_id?: string | null;
           status?: 'active' | 'inactive' | 'suspended';
           phone?: string | null;

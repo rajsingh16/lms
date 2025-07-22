@@ -138,6 +138,9 @@ function AppRoutes() {
         <Route path="loan/dashboard/overdue" element={<OverdueDashboardPage />} />
         <Route path="loan/dashboard/funnel" element={<PlaceholderPage title="Application Funnel" />} />
         
+        {/* Admin Routes */}
+        <Route path="admin/roles" element={<PlaceholderPage title="Role Management" />} />
+        
         {/* Other Module Routes */}
         <Route path="finance/master" element={<PlaceholderPage title="Finance Master" />} />
         <Route path="finance/transaction" element={<PlaceholderPage title="Finance Transaction" />} />
